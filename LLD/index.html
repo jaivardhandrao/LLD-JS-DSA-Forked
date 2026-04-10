@@ -339,23 +339,68 @@ function inline(s) {
 }
 
 function highlightJava(s) {
-  // Comments
-  s = s.replace(/(\/\/.*)/g, '<span class="cmt">$1</span>');
-  s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="cmt">$1</span>');
-  // Strings
-  s = s.replace(/("(?:[^"\\]|\\.)*")/g, '<span class="str">$1</span>');
-  // Annotations
-  s = s.replace(/(@\w+)/g, '<span class="ann">$1</span>');
-  // Keywords
-  const kws = 'abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|try|void|volatile|while|var|record|sealed|permits|yield'.split('|');
-  const kwRe = new RegExp('\\b(' + kws.join('|') + ')\\b', 'g');
-  s = s.replace(kwRe, (m) => {
-    // Don't highlight inside already-tagged spans
-    return '<span class="kw">' + m + '</span>';
-  });
-  // Numbers
-  s = s.replace(/\b(\d+\.?\d*[fFdDlL]?)\b/g, '<span class="num">$1</span>');
-  return s;
+  // Tokenize: pull out comments, strings, annotations first so keywords don't match inside them
+  const tokens = [];
+  let idx = 0;
+  function push(type, text) { tokens.push({ type, text }); }
+
+  while (idx < s.length) {
+    // Line comment
+    if (s[idx] === '/' && s[idx+1] === '/') {
+      const end = s.indexOf('\n', idx);
+      const slice = end === -1 ? s.slice(idx) : s.slice(idx, end);
+      push('cmt', slice);
+      idx += slice.length;
+      continue;
+    }
+    // Block comment
+    if (s[idx] === '/' && s[idx+1] === '*') {
+      const end = s.indexOf('*/', idx + 2);
+      const slice = end === -1 ? s.slice(idx) : s.slice(idx, end + 2);
+      push('cmt', slice);
+      idx += slice.length;
+      continue;
+    }
+    // String
+    if (s[idx] === '"') {
+      let j = idx + 1;
+      while (j < s.length && s[j] !== '"') { if (s[j] === '\\') j++; j++; }
+      const slice = s.slice(idx, j + 1);
+      push('str', slice);
+      idx = j + 1;
+      continue;
+    }
+    // Annotation
+    if (s[idx] === '@' && /\w/.test(s[idx+1] || '')) {
+      const m = s.slice(idx).match(/^@\w+/);
+      if (m) { push('ann', m[0]); idx += m[0].length; continue; }
+    }
+    // Collect plain code until next special token
+    let j = idx + 1;
+    while (j < s.length && s[j] !== '/' && s[j] !== '"' && s[j] !== '@') j++;
+    push('code', s.slice(idx, j));
+    idx = j;
+  }
+
+  // Now highlight only 'code' tokens for keywords and numbers
+  const kws = new Set('abstract,assert,boolean,break,byte,case,catch,char,class,const,continue,default,do,double,else,enum,extends,final,finally,float,for,if,implements,import,instanceof,int,interface,long,native,new,package,private,protected,public,return,short,static,strictfp,super,switch,synchronized,this,throw,throws,transient,try,void,volatile,while,var,record,sealed,permits,yield'.split(','));
+  const kwRe = /\b([a-z]+)\b/g;
+  const numRe = /\b(\d+\.?\d*[fFdDlL]?)\b/g;
+
+  let out = '';
+  for (const t of tokens) {
+    if (t.type === 'cmt') { out += '<span class="cmt">' + t.text + '</span>'; }
+    else if (t.type === 'str') { out += '<span class="str">' + t.text + '</span>'; }
+    else if (t.type === 'ann') { out += '<span class="ann">' + t.text + '</span>'; }
+    else {
+      // Highlight keywords and numbers in plain code
+      let code = t.text;
+      code = code.replace(kwRe, (m) => kws.has(m) ? '<span class="kw">' + m + '</span>' : m);
+      code = code.replace(numRe, '<span class="num">$1</span>');
+      out += code;
+    }
+  }
+  return out;
 }
 </script>
 </body>
