@@ -49,28 +49,36 @@ Complete path from zero to exam-ready. Study top to bottom.
 
 ## Phase 6: Structural Patterns
 
-29. [Design_Patterns/Adapter.md](Design_Patterns/Adapter.md)
-30. [Teacher_PDF_Practice/Structural/Adapter_Practice.md](Teacher_PDF_Practice/Structural/Adapter_Practice.md)
-31. **Solve:** [Practice_Problems/05_Structural/Problem1_Adapter_WeatherService/PROBLEM.md](Practice_Problems/05_Structural/Problem1_Adapter_WeatherService/PROBLEM.md)
-32. [Design_Patterns/Decorator.md](Design_Patterns/Decorator.md)
-33. [Teacher_PDF_Practice/Structural/Decorator_Practice.md](Teacher_PDF_Practice/Structural/Decorator_Practice.md)
-34. **Solve:** [Practice_Problems/05_Structural/Problem2_Decorator_Logger/PROBLEM.md](Practice_Problems/05_Structural/Problem2_Decorator_Logger/PROBLEM.md)
+29. [Design_Patterns/Flyweight.md](Design_Patterns/Flyweight.md)
+30. [Design_Patterns/Proxy.md](Design_Patterns/Proxy.md)
+31. [Design_Patterns/Adapter.md](Design_Patterns/Adapter.md)
+32. [Teacher_PDF_Practice/Structural/Adapter_Practice.md](Teacher_PDF_Practice/Structural/Adapter_Practice.md)
+33. **Solve:** [Practice_Problems/05_Structural/Problem1_Adapter_WeatherService/PROBLEM.md](Practice_Problems/05_Structural/Problem1_Adapter_WeatherService/PROBLEM.md)
+34. [Design_Patterns/Decorator.md](Design_Patterns/Decorator.md)
+35. [Teacher_PDF_Practice/Structural/Decorator_Practice.md](Teacher_PDF_Practice/Structural/Decorator_Practice.md)
+36. **Solve:** [Practice_Problems/05_Structural/Problem2_Decorator_Logger/PROBLEM.md](Practice_Problems/05_Structural/Problem2_Decorator_Logger/PROBLEM.md)
 
 ## Phase 7: Behavioral Patterns
 
-35. [Design_Patterns/Strategy.md](Design_Patterns/Strategy.md)
-36. [Teacher_PDF_Practice/Behavioral/Strategy_Practice.md](Teacher_PDF_Practice/Behavioral/Strategy_Practice.md)
-37. **Solve:** [Practice_Problems/06_Behavioral/Problem1_Strategy_Compression/PROBLEM.md](Practice_Problems/06_Behavioral/Problem1_Strategy_Compression/PROBLEM.md)
+37. [Design_Patterns/Strategy.md](Design_Patterns/Strategy.md)
+38. [Teacher_PDF_Practice/Behavioral/Strategy_Practice.md](Teacher_PDF_Practice/Behavioral/Strategy_Practice.md)
+39. **Solve:** [Practice_Problems/06_Behavioral/Problem1_Strategy_Compression/PROBLEM.md](Practice_Problems/06_Behavioral/Problem1_Strategy_Compression/PROBLEM.md)
+40. [Design_Patterns/Observer.md](Design_Patterns/Observer.md)
 
-## Phase 8: Final Revision (MCQ Rapid-Fire)
+## Phase 8: UML Diagrams
 
-38. [OOP/OOP_MCQ_Quiz.md](OOP/OOP_MCQ_Quiz.md)
-39. [SOLID/SOLID_MCQ_Quiz.md](SOLID/SOLID_MCQ_Quiz.md)
-40. [Teacher_PDF_Practice/Creational/Singleton_Practice.md](Teacher_PDF_Practice/Creational/Singleton_Practice.md) -- MCQ section only
-41. [Teacher_PDF_Practice/Creational/Factory_Practice.md](Teacher_PDF_Practice/Creational/Factory_Practice.md) -- MCQ section only
-42. [Teacher_PDF_Practice/Creational/Builder_Practice.md](Teacher_PDF_Practice/Creational/Builder_Practice.md) -- MCQ section only
-43. [Teacher_PDF_Practice/Creational/Prototype_Practice.md](Teacher_PDF_Practice/Creational/Prototype_Practice.md) -- MCQ section only
-44. [Teacher_PDF_Practice/Structural/Adapter_Practice.md](Teacher_PDF_Practice/Structural/Adapter_Practice.md) -- MCQ section only
-45. [Teacher_PDF_Practice/Structural/Decorator_Practice.md](Teacher_PDF_Practice/Structural/Decorator_Practice.md) -- MCQ section only
-46. [Teacher_PDF_Practice/Behavioral/Strategy_Practice.md](Teacher_PDF_Practice/Behavioral/Strategy_Practice.md) -- MCQ section only
-47. [Design_Patterns/Design_Patterns_Overview.md](Design_Patterns/Design_Patterns_Overview.md) -- comparison tables only
+41. [OOP/UML_Diagrams.md](OOP/UML_Diagrams.md)
+
+## Phase 9: Final Revision (MCQ Rapid-Fire)
+
+42. [OOP/OOP_MCQ_Quiz.md](OOP/OOP_MCQ_Quiz.md)
+43. [SOLID/SOLID_MCQ_Quiz.md](SOLID/SOLID_MCQ_Quiz.md)
+44. [Teacher_PDF_Practice/Creational/Singleton_Practice.md](Teacher_PDF_Practice/Creational/Singleton_Practice.md) -- MCQ section only
+45. [Teacher_PDF_Practice/Creational/Factory_Practice.md](Teacher_PDF_Practice/Creational/Factory_Practice.md) -- MCQ section only
+46. [Teacher_PDF_Practice/Creational/Builder_Practice.md](Teacher_PDF_Practice/Creational/Builder_Practice.md) -- MCQ section only
+47. [Teacher_PDF_Practice/Creational/Prototype_Practice.md](Teacher_PDF_Practice/Creational/Prototype_Practice.md) -- MCQ section only
+48. [Teacher_PDF_Practice/Structural/Adapter_Practice.md](Teacher_PDF_Practice/Structural/Adapter_Practice.md) -- MCQ section only
+49. [Teacher_PDF_Practice/Structural/Decorator_Practice.md](Teacher_PDF_Practice/Structural/Decorator_Practice.md) -- MCQ section only
+50. [Teacher_PDF_Practice/Behavioral/Strategy_Practice.md](Teacher_PDF_Practice/Behavioral/Strategy_Practice.md) -- MCQ section only
+51. MCQ sections in [Design_Patterns/Flyweight.md](Design_Patterns/Flyweight.md), [Proxy.md](Design_Patterns/Proxy.md), [Observer.md](Design_Patterns/Observer.md)
+52. [Design_Patterns/Design_Patterns_Overview.md](Design_Patterns/Design_Patterns_Overview.md) -- comparison tables only

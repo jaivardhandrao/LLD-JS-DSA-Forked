@@ -36,8 +36,10 @@ The GoF (Gang of Four) book groups patterns into **3 categories** based on what 
 |---------|-------------|-------------|
 | **Adapter** | Translates one interface into another the client expects | Integrating legacy/third-party services with incompatible APIs |
 | **Decorator** | Wraps an object to add optional, stackable behavior dynamically | Cross-cutting concerns (logging, retry, caching, auth) that are optional and combinable |
+| **Flyweight** | Share common state across many objects to save memory | Thousands of similar objects (text characters, game trees, map icons) |
+| **Proxy** | Control access to an object (lazy load, security, caching) | Heavy objects that shouldn't load until needed, role-based access control |
 
-**Other structural patterns (not in syllabus but good to know exist):** Facade (simplify a complex subsystem), Proxy (control access to an object), Composite (tree structures), Bridge (separate abstraction from implementation).
+**Other structural patterns (not in syllabus but good to know exist):** Facade (simplify a complex subsystem), Composite (tree structures), Bridge (separate abstraction from implementation).
 
 ---
 
@@ -50,20 +52,21 @@ The GoF (Gang of Four) book groups patterns into **3 categories** based on what 
 | Pattern | What it does | When to use |
 |---------|-------------|-------------|
 | **Strategy** | Encapsulate a family of algorithms; client picks one at runtime | Sorting policies, fee computation, AI movement, validation rules |
+| **Observer** | One-to-many notification; when subject changes, all observers are notified | Stock tickers, event systems, news feeds, UI data binding |
 
-**Other behavioral patterns (not in syllabus but good to know exist):** Observer (event notification), Template Method (algorithm skeleton with overridable steps), State (behavior changes as internal state changes), Command (encapsulate a request as an object).
+**Other behavioral patterns (not in syllabus but good to know exist):** Template Method (algorithm skeleton with overridable steps), State (behavior changes as internal state changes), Command (encapsulate a request as an object).
 
 ---
 
 ## Master Comparison Table
 
-| Aspect | Singleton | Factory Method | Builder | Prototype | Adapter | Decorator | Strategy |
-|--------|-----------|---------------|---------|-----------|---------|-----------|----------|
-| **Category** | Creational | Creational | Creational | Creational | Structural | Structural | Behavioral |
-| **Core mechanism** | Private constructor + static access | Abstract method overridden by subclasses | Fluent API + `build()` | `clone()` / `copy()` | Composition (wraps adaptee) | Composition (wraps component) | Composition (delegates to strategy) |
-| **Number of instances** | Exactly 1 | Many (1 per factory call) | 1 (the built object) | Many (clones) | 1 adapter per provider | N decorators stacked | 1 strategy at a time |
-| **Key SOLID principle** | -- | OCP, DIP | SRP | OCP | All 5 | OCP, SRP | OCP, SRP, DIP |
-| **Solves** | Global access + single instance | Varying creation policy | Complex construction | Expensive/dynamic creation | Incompatible interfaces | Optional stackable behaviors | Interchangeable algorithms |
+| Aspect | Singleton | Factory Method | Builder | Prototype | Adapter | Decorator | Flyweight | Proxy | Strategy | Observer |
+|--------|-----------|---------------|---------|-----------|---------|-----------|-----------|-------|----------|----------|
+| **Category** | Creational | Creational | Creational | Creational | Structural | Structural | Structural | Structural | Behavioral | Behavioral |
+| **Core mechanism** | Private constructor + static access | Abstract method overridden by subclasses | Fluent API + `build()` | `clone()` / `copy()` | Composition (wraps adaptee) | Composition (wraps component) | Factory + cache for shared state | Same interface, controls access | Composition (delegates to strategy) | Subject notifies list of observers |
+| **Number of instances** | Exactly 1 | Many (1 per factory call) | 1 (the built object) | Many (clones) | 1 adapter per provider | N decorators stacked | Few shared, many contexts | 1 proxy per subject | 1 strategy at a time | 1 subject, N observers |
+| **Key SOLID principle** | -- | OCP, DIP | SRP | OCP | All 5 | OCP, SRP | SRP | SRP, OCP | OCP, SRP, DIP | OCP, DIP |
+| **Solves** | Global access + single instance | Varying creation policy | Complex construction | Expensive/dynamic creation | Incompatible interfaces | Optional stackable behaviors | Memory waste from duplicate state | Lazy loading, access control, caching | Interchangeable algorithms | Event notification, loose coupling |
 
 ---
 
@@ -81,11 +84,14 @@ The GoF (Gang of Four) book groups patterns into **3 categories** based on what 
 
 - Legacy/third-party API doesn't match what my code expects? -> **Adapter**
 - I need to add optional, stackable behavior to an existing interface? -> **Decorator**
+- Thousands of similar objects eating memory? -> **Flyweight** (share intrinsic state)
+- I need lazy loading, access control, or caching around an object? -> **Proxy**
 
 **"I need different behavior at runtime..."**
 
 - One algorithm selected from a family, swappable at runtime? -> **Strategy**
 - Multiple optional behaviors layered on top of each other? -> **Decorator** (not Strategy!)
+- When one object changes, many others need to know? -> **Observer**
 
 ---
 
@@ -146,11 +152,11 @@ Patterns don't live in isolation. In real systems:
 **Creational** (create objects cleanly): **S**ingleton, **F**actory, **B**uilder, **P**rototype
 - Mnemonic: **S**ome **F**actories **B**uild **P**roducts
 
-**Structural** (compose objects): **A**dapter, **D**ecorator
-- Mnemonic: **A**dapt and **D**ecorate
+**Structural** (compose objects): **A**dapter, **D**ecorator, **F**lyweight, **P**roxy
+- Mnemonic: **A** **D**ecorated **F**lying **P**roxy
 
-**Behavioral** (object interaction): **S**trategy
-- Mnemonic: **S**elect a strategy
+**Behavioral** (object interaction): **S**trategy, **O**bserver
+- Mnemonic: **S**trategy **O**bserves
 
 ---
 
