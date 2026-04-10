@@ -9,7 +9,7 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; display: flex; height: 100vh; }
 
   /* Sidebar */
-  #sidebar { width: 300px; min-width: 300px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; padding: 16px 0; }
+  #sidebar { width: 280px; min-width: 280px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; padding: 16px 0; }
   #sidebar h2 { padding: 0 16px 12px; font-size: 14px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
   .phase { margin-bottom: 8px; }
   .phase-title { padding: 8px 16px; font-size: 13px; font-weight: 600; color: #58a6ff; cursor: pointer; user-select: none; }
@@ -22,13 +22,26 @@
   .file-link:hover { background: #1f2937; }
   .file-link.active { background: #1f6feb33; color: #58a6ff; }
   .file-link.solve { color: #f0883e; }
-  .file-link.mcq-only { color: #8b949e; font-style: italic; }
+  .file-link .resume-dot { display: inline-block; width: 6px; height: 6px; background: #f0883e; border-radius: 50%; margin-right: 6px; }
 
-  /* Content */
-  #content { flex: 1; overflow-y: auto; padding: 32px 48px; max-width: 900px; }
-  #content.wide { max-width: 100%; }
+  /* Middle content */
+  #content-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #pathbar { padding: 8px 32px; background: #161b22; border-bottom: 1px solid #30363d; font-size: 12px; color: #8b949e; font-family: monospace; display: flex; justify-content: space-between; align-items: center; }
+  #pathbar .progress { color: #3fb950; font-size: 11px; }
+  #content-area { display: flex; flex: 1; overflow: hidden; }
+  #content { flex: 1; overflow-y: auto; padding: 32px 40px; }
   #welcome { text-align: center; margin-top: 20vh; color: #8b949e; }
   #welcome h1 { font-size: 28px; color: #c9d1d9; margin-bottom: 8px; }
+
+  /* Right TOC */
+  #toc { width: 220px; min-width: 220px; background: #0d1117; border-left: 1px solid #30363d; overflow-y: auto; padding: 16px 0; display: none; }
+  #toc h3 { padding: 0 12px 10px; font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+  #toc a { display: block; padding: 4px 12px; font-size: 12px; color: #8b949e; text-decoration: none; cursor: pointer; line-height: 1.5; border-left: 2px solid transparent; transition: all 0.15s; }
+  #toc a:hover { color: #c9d1d9; background: #161b22; }
+  #toc a.active { color: #58a6ff; border-left-color: #58a6ff; background: #1f6feb11; }
+  #toc a.h2 { padding-left: 12px; font-weight: 600; color: #c9d1d9; }
+  #toc a.h3 { padding-left: 24px; }
+  #toc a.h4 { padding-left: 36px; font-size: 11px; }
 
   /* Markdown styles */
   .md h1 { font-size: 28px; color: #f0f6fc; border-bottom: 1px solid #30363d; padding-bottom: 8px; margin: 24px 0 16px; }
@@ -55,7 +68,7 @@
   .md details[open] summary { margin-bottom: 8px; }
   .md img { max-width: 100%; }
 
-  /* Java syntax - basic */
+  /* Java syntax */
   .kw { color: #ff7b72; }
   .str { color: #a5d6ff; }
   .cmt { color: #8b949e; font-style: italic; }
@@ -67,16 +80,11 @@
   #search input { width: 100%; padding: 8px 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-size: 13px; outline: none; }
   #search input:focus { border-color: #58a6ff; }
 
-  /* Java compiler button */
+  /* Buttons */
   #compiler-btn { display: block; margin: 8px 16px 12px; padding: 10px; background: #238636; border: 1px solid #2ea043; border-radius: 6px; color: #fff; font-size: 13px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; transition: background 0.15s; }
   #compiler-btn:hover { background: #2ea043; }
-
-  /* Floating try-it button */
-  #try-it-float { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: #238636; border: 1px solid #2ea043; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: background 0.15s, transform 0.15s; z-index: 100; }
+  #try-it-float { position: fixed; bottom: 24px; right: 244px; padding: 12px 20px; background: #238636; border: 1px solid #2ea043; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: background 0.15s, transform 0.15s; z-index: 100; }
   #try-it-float:hover { background: #2ea043; transform: translateY(-2px); }
-
-  /* Path bar */
-  #pathbar { padding: 8px 48px; background: #161b22; border-bottom: 1px solid #30363d; font-size: 12px; color: #8b949e; font-family: monospace; }
 </style>
 </head>
 <body>
@@ -88,13 +96,22 @@
   <div id="fileTree"></div>
 </div>
 
-<div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-  <div id="pathbar">Select a file from the sidebar</div>
-  <div id="content">
-    <div id="welcome">
-      <h1>LLD Study Notes</h1>
-      <p>Pick a file from the sidebar to start reading.</p>
-      <p style="margin-top:16px; font-size:13px;">Follow the order in STUDY_ORDER.md</p>
+<div id="content-wrap">
+  <div id="pathbar">
+    <span id="pathtext">Select a file from the sidebar</span>
+    <span class="progress" id="progressText"></span>
+  </div>
+  <div id="content-area">
+    <div id="content">
+      <div id="welcome">
+        <h1>LLD Study Notes</h1>
+        <p>Pick a file from the sidebar to start reading.</p>
+        <p style="margin-top:16px; font-size:13px;">Follow the order in STUDY_ORDER.md</p>
+      </div>
+    </div>
+    <div id="toc">
+      <h3>On this page</h3>
+      <div id="toc-links"></div>
     </div>
   </div>
 </div>
@@ -102,87 +119,82 @@
 <a id="try-it-float" href="https://onecompiler.com/java" target="_blank" rel="noopener">Try in Java Compiler</a>
 
 <script>
+// ---- State ----
+let currentPath = null;
+let saveTimer = null;
+
+// ---- localStorage helpers ----
+function getPositions() {
+  try { return JSON.parse(localStorage.getItem('lld_positions') || '{}'); } catch { return {}; }
+}
+function savePosition(path, scrollTop) {
+  const pos = getPositions();
+  pos[path] = scrollTop;
+  localStorage.setItem('lld_positions', JSON.stringify(pos));
+}
+function getPosition(path) {
+  return getPositions()[path] || 0;
+}
+function getVisitedFiles() {
+  return new Set(Object.keys(getPositions()));
+}
+
+// ---- File tree ----
 const TREE = [
   { phase: "Phase 1: OOP Fundamentals", files: [
-    "OOP/OOP_NOTES.md",
-    "OOP/OOP_Viva_Questions.md",
-    "OOP/OOP_MCQ_Quiz.md",
-    "OOP/OOP_Coding_Exam.md",
+    "OOP/OOP_NOTES.md", "OOP/OOP_Viva_Questions.md", "OOP/OOP_MCQ_Quiz.md", "OOP/OOP_Coding_Exam.md",
     { path: "Practice_Problems/01_OOP/Problem1_LibrarySystem/PROBLEM.md", solve: true },
     { path: "Practice_Problems/01_OOP/Problem2_VehicleFleet/PROBLEM.md", solve: true },
   ]},
   { phase: "Phase 2: Immutable Classes", files: [
-    "OOP/Immutable_Classes.md",
-    "Teacher_PDF_Practice/Creational/Immutable_Classes_Practice.md",
+    "OOP/Immutable_Classes.md", "Teacher_PDF_Practice/Creational/Immutable_Classes_Practice.md",
     { path: "Practice_Problems/02_Immutability/Problem1_MovieTicket/PROBLEM.md", solve: true },
   ]},
   { phase: "Phase 3: SOLID Principles", files: [
-    "SOLID/SOLID_NOTES.md",
-    "SOLID/SOLID_Viva_Questions.md",
-    "SOLID/SOLID_MCQ_Quiz.md",
-    "SOLID/SOLID_Coding_Exam.md",
+    "SOLID/SOLID_NOTES.md", "SOLID/SOLID_Viva_Questions.md", "SOLID/SOLID_MCQ_Quiz.md", "SOLID/SOLID_Coding_Exam.md",
     { path: "Practice_Problems/03_SOLID/Problem1_NotificationRefactor/PROBLEM.md", solve: true },
     { path: "Practice_Problems/03_SOLID/Problem2_FileExporter/PROBLEM.md", solve: true },
   ]},
-  { phase: "Phase 4: Design Patterns Overview", files: [
-    "Design_Patterns/Design_Patterns_Overview.md",
-  ]},
+  { phase: "Phase 4: Design Patterns Overview", files: [ "Design_Patterns/Design_Patterns_Overview.md" ]},
   { phase: "Phase 5: Creational Patterns", files: [
-    "Design_Patterns/Singleton.md",
-    "Teacher_PDF_Practice/Creational/Singleton_Practice.md",
+    "Design_Patterns/Singleton.md", "Teacher_PDF_Practice/Creational/Singleton_Practice.md",
     { path: "Practice_Problems/04_Creational/Problem1_Singleton_AppConfig/PROBLEM.md", solve: true },
-    "Design_Patterns/Factory.md",
-    "Teacher_PDF_Practice/Creational/Factory_Practice.md",
-    "Design_Patterns/Builder.md",
-    "Teacher_PDF_Practice/Creational/Builder_Practice.md",
+    "Design_Patterns/Factory.md", "Teacher_PDF_Practice/Creational/Factory_Practice.md",
+    "Design_Patterns/Builder.md", "Teacher_PDF_Practice/Creational/Builder_Practice.md",
     { path: "Practice_Problems/04_Creational/Problem2_Factory_DocumentCreator/PROBLEM.md", solve: true },
     { path: "Practice_Problems/04_Creational/Problem3_Builder_HttpRequest/PROBLEM.md", solve: true },
-    "Design_Patterns/Prototype.md",
-    "Teacher_PDF_Practice/Creational/Prototype_Practice.md",
+    "Design_Patterns/Prototype.md", "Teacher_PDF_Practice/Creational/Prototype_Practice.md",
     { path: "Practice_Problems/04_Creational/Problem4_Prototype_UITheme/PROBLEM.md", solve: true },
   ]},
   { phase: "Phase 6: Structural Patterns", files: [
-    "Design_Patterns/Flyweight.md",
-    "Design_Patterns/Proxy.md",
-    "Design_Patterns/Adapter.md",
-    "Teacher_PDF_Practice/Structural/Adapter_Practice.md",
+    "Design_Patterns/Flyweight.md", "Design_Patterns/Proxy.md",
+    "Design_Patterns/Adapter.md", "Teacher_PDF_Practice/Structural/Adapter_Practice.md",
     { path: "Practice_Problems/05_Structural/Problem1_Adapter_WeatherService/PROBLEM.md", solve: true },
-    "Design_Patterns/Decorator.md",
-    "Teacher_PDF_Practice/Structural/Decorator_Practice.md",
+    "Design_Patterns/Decorator.md", "Teacher_PDF_Practice/Structural/Decorator_Practice.md",
     { path: "Practice_Problems/05_Structural/Problem2_Decorator_Logger/PROBLEM.md", solve: true },
   ]},
   { phase: "Phase 7: Behavioral Patterns", files: [
-    "Design_Patterns/Strategy.md",
-    "Teacher_PDF_Practice/Behavioral/Strategy_Practice.md",
+    "Design_Patterns/Strategy.md", "Teacher_PDF_Practice/Behavioral/Strategy_Practice.md",
     { path: "Practice_Problems/06_Behavioral/Problem1_Strategy_Compression/PROBLEM.md", solve: true },
     "Design_Patterns/Observer.md",
   ]},
-  { phase: "Phase 8: UML Diagrams", files: [
-    "OOP/UML_Diagrams.md",
-  ]},
+  { phase: "Phase 8: UML Diagrams", files: [ "OOP/UML_Diagrams.md" ]},
   { phase: "Phase 9: Final Revision", files: [
-    "OOP/OOP_MCQ_Quiz.md",
-    "SOLID/SOLID_MCQ_Quiz.md",
-    "Teacher_PDF_Practice/Creational/Singleton_Practice.md",
-    "Teacher_PDF_Practice/Creational/Factory_Practice.md",
-    "Teacher_PDF_Practice/Creational/Builder_Practice.md",
-    "Teacher_PDF_Practice/Creational/Prototype_Practice.md",
-    "Teacher_PDF_Practice/Structural/Adapter_Practice.md",
-    "Teacher_PDF_Practice/Structural/Decorator_Practice.md",
+    "OOP/OOP_MCQ_Quiz.md", "SOLID/SOLID_MCQ_Quiz.md",
+    "Teacher_PDF_Practice/Creational/Singleton_Practice.md", "Teacher_PDF_Practice/Creational/Factory_Practice.md",
+    "Teacher_PDF_Practice/Creational/Builder_Practice.md", "Teacher_PDF_Practice/Creational/Prototype_Practice.md",
+    "Teacher_PDF_Practice/Structural/Adapter_Practice.md", "Teacher_PDF_Practice/Structural/Decorator_Practice.md",
     "Teacher_PDF_Practice/Behavioral/Strategy_Practice.md",
-    "Design_Patterns/Flyweight.md",
-    "Design_Patterns/Proxy.md",
-    "Design_Patterns/Observer.md",
+    "Design_Patterns/Flyweight.md", "Design_Patterns/Proxy.md", "Design_Patterns/Observer.md",
     "Design_Patterns/Design_Patterns_Overview.md",
   ]},
-  { phase: "Study Order", files: [
-    "STUDY_ORDER.md",
-  ]},
+  { phase: "Study Order", files: [ "STUDY_ORDER.md" ]},
 ];
 
 // Build sidebar
 const treeEl = document.getElementById('fileTree');
 let allLinks = [];
+const visited = getVisitedFiles();
 
 TREE.forEach((group, gi) => {
   const div = document.createElement('div');
@@ -199,7 +211,9 @@ TREE.forEach((group, gi) => {
     const isSolve = typeof f === 'object' && f.solve;
     const a = document.createElement('a');
     a.className = 'file-link' + (isSolve ? ' solve' : '');
-    a.textContent = (isSolve ? '[SOLVE] ' : '') + path.split('/').pop().replace('.md','');
+    // Show orange dot if file has saved position
+    const dot = visited.has(path) ? '<span class="resume-dot" title="Resume reading"></span>' : '';
+    a.innerHTML = dot + (isSolve ? '[SOLVE] ' : '') + path.split('/').pop().replace('.md','');
     a.dataset.path = path;
     a.onclick = () => loadFile(path, a);
     items.appendChild(a);
@@ -212,30 +226,119 @@ TREE.forEach((group, gi) => {
 // Search
 document.getElementById('searchInput').oninput = function() {
   const q = this.value.toLowerCase();
-  allLinks.forEach(l => {
-    l.el.style.display = l.name.includes(q) ? '' : 'none';
-  });
+  allLinks.forEach(l => { l.el.style.display = l.name.includes(q) ? '' : 'none'; });
   if (q) document.querySelectorAll('.phase').forEach(p => p.classList.add('open'));
 };
 
-// Load file
+// ---- Save scroll on scroll (debounced) ----
+const contentEl = document.getElementById('content');
+contentEl.addEventListener('scroll', () => {
+  if (!currentPath) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    savePosition(currentPath, contentEl.scrollTop);
+    updateProgress();
+  }, 300);
+});
+
+// ---- Progress indicator ----
+function updateProgress() {
+  if (!currentPath) return;
+  const sh = contentEl.scrollHeight - contentEl.clientHeight;
+  if (sh <= 0) { document.getElementById('progressText').textContent = '100% read'; return; }
+  const pct = Math.min(100, Math.round((contentEl.scrollTop / sh) * 100));
+  document.getElementById('progressText').textContent = pct + '% read';
+}
+
+// ---- TOC: highlight on scroll ----
+let tocEntries = [];
+function updateTocHighlight() {
+  if (!tocEntries.length) return;
+  const scrollTop = contentEl.scrollTop + 60;
+  let active = tocEntries[0];
+  for (const e of tocEntries) {
+    if (e.target.offsetTop <= scrollTop) active = e;
+  }
+  tocEntries.forEach(e => e.link.classList.remove('active'));
+  if (active) active.link.classList.add('active');
+}
+contentEl.addEventListener('scroll', updateTocHighlight);
+
+// ---- Load file ----
 async function loadFile(path, linkEl) {
+  // Save current position before switching
+  if (currentPath) savePosition(currentPath, contentEl.scrollTop);
+
   document.querySelectorAll('.file-link').forEach(a => a.classList.remove('active'));
   if (linkEl) linkEl.classList.add('active');
-  document.getElementById('pathbar').textContent = 'LLD/' + path;
+  document.getElementById('pathtext').textContent = 'LLD/' + path;
+  currentPath = path;
 
   try {
     const resp = await fetch(path);
     if (!resp.ok) throw new Error(resp.status);
     const md = await resp.text();
-    document.getElementById('content').innerHTML = '<div class="md">' + renderMd(md) + '</div>';
-    document.getElementById('content').scrollTop = 0;
+    contentEl.innerHTML = '<div class="md">' + renderMd(md) + '</div>';
+
+    // Build TOC from rendered headings
+    buildToc();
+
+    // Restore scroll position
+    const saved = getPosition(path);
+    if (saved > 0) {
+      contentEl.scrollTop = saved;
+    } else {
+      contentEl.scrollTop = 0;
+    }
+
+    // Mark as visited (add dot to sidebar)
+    if (linkEl && !linkEl.querySelector('.resume-dot')) {
+      const dot = document.createElement('span');
+      dot.className = 'resume-dot';
+      dot.title = 'Resume reading';
+      linkEl.prepend(dot);
+    }
+
+    updateProgress();
+    setTimeout(updateTocHighlight, 50);
   } catch(e) {
-    document.getElementById('content').innerHTML = '<div class="md"><h2>Could not load file</h2><p>' + path + '</p><p style="color:#f85149;">' + e.message + '</p></div>';
+    contentEl.innerHTML = '<div class="md"><h2>Could not load file</h2><p>' + path + '</p><p style="color:#f85149;">' + e.message + '</p></div>';
+    document.getElementById('toc').style.display = 'none';
   }
 }
 
-// Markdown renderer
+// ---- Build TOC ----
+function buildToc() {
+  const toc = document.getElementById('toc');
+  const tocLinks = document.getElementById('toc-links');
+  tocLinks.innerHTML = '';
+  tocEntries = [];
+
+  const headings = contentEl.querySelectorAll('h1, h2, h3, h4');
+  if (headings.length < 2) { toc.style.display = 'none'; return; }
+
+  toc.style.display = 'block';
+  let idCounter = 0;
+
+  headings.forEach(h => {
+    const level = h.tagName.toLowerCase(); // h1, h2, h3, h4
+    const id = 'heading-' + (idCounter++);
+    h.id = id;
+
+    const a = document.createElement('a');
+    a.className = level;
+    a.textContent = h.textContent;
+    a.onclick = (e) => {
+      e.preventDefault();
+      contentEl.scrollTo({ top: h.offsetTop - 20, behavior: 'smooth' });
+    };
+
+    tocLinks.appendChild(a);
+    tocEntries.push({ link: a, target: h });
+  });
+}
+
+// ---- Markdown renderer ----
 function renderMd(src) {
   let html = '';
   const lines = src.split('\n');
@@ -265,49 +368,28 @@ function renderMd(src) {
 
   while (i < lines.length) {
     let line = lines[i];
-
-    // Code blocks
     if (line.trimStart().startsWith('```')) {
       if (inCode) {
         html += '<pre><code>' + highlightJava(escHtml(codeBlock.replace(/\n$/, ''))) + '</code></pre>';
         inCode = false; codeBlock = '';
-      } else {
-        flushList(); flushTable();
-        codeLang = line.trim().slice(3);
-        inCode = true; codeBlock = '';
-      }
+      } else { flushList(); flushTable(); codeLang = line.trim().slice(3); inCode = true; codeBlock = ''; }
       i++; continue;
     }
     if (inCode) { codeBlock += line + '\n'; i++; continue; }
-
-    // Table
     if (line.includes('|') && line.trim().startsWith('|')) {
       flushList();
       const cells = line.split('|').slice(1, -1);
       if (!inTable) { inTable = true; tableRows = []; }
       if (!(cells.every(c => /^[\s:-]+$/.test(c)))) tableRows.push(cells);
-      else if (tableRows.length === 1) tableRows.push(cells); // separator
+      else if (tableRows.length === 1) tableRows.push(cells);
       i++; continue;
     } else { flushTable(); }
-
-    // Headings
     const hm = line.match(/^(#{1,4})\s+(.*)/);
     if (hm) { flushList(); const lvl = hm[1].length; html += '<h' + lvl + '>' + inline(hm[2]) + '</h' + lvl + '>'; i++; continue; }
-
-    // HR
     if (/^---+\s*$/.test(line.trim())) { flushList(); html += '<hr>'; i++; continue; }
-
-    // Blockquote
     if (line.trimStart().startsWith('>')) { flushList(); html += '<blockquote>' + inline(line.replace(/^>\s?/, '')) + '</blockquote>'; i++; continue; }
-
-    // Details/summary
-    if (line.trim().startsWith('<details>')) { flushList(); html += line; i++; continue; }
-    if (line.trim().startsWith('</details>')) { html += line; i++; continue; }
-    if (line.trim().startsWith('<summary>')) { html += line; i++; continue; }
-    if (line.trim().startsWith('</summary>')) { html += line; i++; continue; }
+    if (line.trim().startsWith('<details>') || line.trim().startsWith('</details>') || line.trim().startsWith('<summary>') || line.trim().startsWith('</summary>')) { flushList(); html += line; i++; continue; }
     if (line.trim().match(/^<details><summary>.*<\/summary>/)) { html += line; i++; continue; }
-
-    // Lists
     const ulm = line.match(/^(\s*)[-*]\s+(.*)/);
     const olm = line.match(/^(\s*)\d+\.\s+(.*)/);
     if (ulm || olm) {
@@ -315,11 +397,7 @@ function renderMd(src) {
       listItems += '<li>' + inline((ulm || olm)[2]) + '</li>';
       i++; continue;
     } else { flushList(); }
-
-    // Empty line
     if (line.trim() === '') { i++; continue; }
-
-    // Paragraph
     html += '<p>' + inline(line) + '</p>';
     i++;
   }
@@ -328,89 +406,65 @@ function renderMd(src) {
   return html;
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function inline(s) {
   s = escHtml(s);
-  // Images
   s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2">');
-  // Links
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-  // Bold + italic
   s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
   s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  // Inline code
   s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
   return s;
 }
 
 function highlightJava(s) {
-  // Tokenize: pull out comments, strings, annotations first so keywords don't match inside them
-  const tokens = [];
-  let idx = 0;
+  const tokens = []; let idx = 0;
   function push(type, text) { tokens.push({ type, text }); }
-
   while (idx < s.length) {
-    // Line comment
     if (s[idx] === '/' && s[idx+1] === '/') {
-      const end = s.indexOf('\n', idx);
-      const slice = end === -1 ? s.slice(idx) : s.slice(idx, end);
-      push('cmt', slice);
-      idx += slice.length;
-      continue;
+      const end = s.indexOf('\n', idx); const slice = end === -1 ? s.slice(idx) : s.slice(idx, end);
+      push('cmt', slice); idx += slice.length; continue;
     }
-    // Block comment
     if (s[idx] === '/' && s[idx+1] === '*') {
-      const end = s.indexOf('*/', idx + 2);
-      const slice = end === -1 ? s.slice(idx) : s.slice(idx, end + 2);
-      push('cmt', slice);
-      idx += slice.length;
-      continue;
+      const end = s.indexOf('*/', idx + 2); const slice = end === -1 ? s.slice(idx) : s.slice(idx, end + 2);
+      push('cmt', slice); idx += slice.length; continue;
     }
-    // String
     if (s[idx] === '"') {
-      let j = idx + 1;
-      while (j < s.length && s[j] !== '"') { if (s[j] === '\\') j++; j++; }
-      const slice = s.slice(idx, j + 1);
-      push('str', slice);
-      idx = j + 1;
-      continue;
+      let j = idx + 1; while (j < s.length && s[j] !== '"') { if (s[j] === '\\') j++; j++; }
+      push('str', s.slice(idx, j + 1)); idx = j + 1; continue;
     }
-    // Annotation
     if (s[idx] === '@' && /\w/.test(s[idx+1] || '')) {
       const m = s.slice(idx).match(/^@\w+/);
       if (m) { push('ann', m[0]); idx += m[0].length; continue; }
     }
-    // Collect plain code until next special token
     let j = idx + 1;
     while (j < s.length && s[j] !== '/' && s[j] !== '"' && s[j] !== '@') j++;
-    push('code', s.slice(idx, j));
-    idx = j;
+    push('code', s.slice(idx, j)); idx = j;
   }
-
-  // Now highlight only 'code' tokens for keywords and numbers
   const kws = new Set('abstract,assert,boolean,break,byte,case,catch,char,class,const,continue,default,do,double,else,enum,extends,final,finally,float,for,if,implements,import,instanceof,int,interface,long,native,new,package,private,protected,public,return,short,static,strictfp,super,switch,synchronized,this,throw,throws,transient,try,void,volatile,while,var,record,sealed,permits,yield'.split(','));
   const kwRe = /\b([a-z]+)\b/g;
   const numRe = /\b(\d+\.?\d*[fFdDlL]?)\b/g;
-
   let out = '';
   for (const t of tokens) {
-    if (t.type === 'cmt') { out += '<span class="cmt">' + t.text + '</span>'; }
-    else if (t.type === 'str') { out += '<span class="str">' + t.text + '</span>'; }
-    else if (t.type === 'ann') { out += '<span class="ann">' + t.text + '</span>'; }
+    if (t.type === 'cmt') out += '<span class="cmt">' + t.text + '</span>';
+    else if (t.type === 'str') out += '<span class="str">' + t.text + '</span>';
+    else if (t.type === 'ann') out += '<span class="ann">' + t.text + '</span>';
     else {
-      // Highlight keywords and numbers in plain code
       let code = t.text;
-      code = code.replace(kwRe, (m) => kws.has(m) ? '<span class="kw">' + m + '</span>' : m);
+      code = code.replace(kwRe, m => kws.has(m) ? '<span class="kw">' + m + '</span>' : m);
       code = code.replace(numRe, '<span class="num">$1</span>');
       out += code;
     }
   }
   return out;
 }
+
+// Save position on page unload
+window.addEventListener('beforeunload', () => {
+  if (currentPath) savePosition(currentPath, contentEl.scrollTop);
+});
 </script>
 </body>
 </html>
