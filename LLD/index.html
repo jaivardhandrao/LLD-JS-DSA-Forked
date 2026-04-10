@@ -67,6 +67,14 @@
   #search input { width: 100%; padding: 8px 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-size: 13px; outline: none; }
   #search input:focus { border-color: #58a6ff; }
 
+  /* Java compiler button */
+  #compiler-btn { display: block; margin: 8px 16px 12px; padding: 10px; background: #238636; border: 1px solid #2ea043; border-radius: 6px; color: #fff; font-size: 13px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; transition: background 0.15s; }
+  #compiler-btn:hover { background: #2ea043; }
+
+  /* Floating try-it button */
+  #try-it-float { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: #238636; border: 1px solid #2ea043; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: background 0.15s, transform 0.15s; z-index: 100; }
+  #try-it-float:hover { background: #2ea043; transform: translateY(-2px); }
+
   /* Path bar */
   #pathbar { padding: 8px 48px; background: #161b22; border-bottom: 1px solid #30363d; font-size: 12px; color: #8b949e; font-family: monospace; }
 </style>
@@ -76,6 +84,7 @@
 <div id="sidebar">
   <h2>LLD Notes</h2>
   <div id="search"><input type="text" placeholder="Search files..." id="searchInput"></div>
+  <a id="compiler-btn" href="https://onecompiler.com/java" target="_blank" rel="noopener">Open Java Compiler</a>
   <div id="fileTree"></div>
 </div>
 
@@ -89,6 +98,8 @@
     </div>
   </div>
 </div>
+
+<a id="try-it-float" href="https://onecompiler.com/java" target="_blank" rel="noopener">Try in Java Compiler</a>
 
 <script>
 const TREE = [
