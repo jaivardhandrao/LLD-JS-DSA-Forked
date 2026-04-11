@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Notes</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+:root {
+  --bg-0: #0d1117;
+  --bg-1: #161b22;
+  --bg-2: #1f2937;
+  --border: #30363d;
+  --border-lt: #21262d;
+  --text-0: #f0f6fc;
+  --text-1: #c9d1d9;
+  --text-2: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --green-bg: #238636;
+  --orange: #f0883e;
+  --red: #f85149;
+  --sidebar-w: 280px;
+  --toc-w: 220px;
+  --topbar-h: 44px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg-0);color:var(--text-1)}
+
+/* ===== APP LAYOUT ===== */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ===== SIDEBAR ===== */
+#sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--bg-1);border-right:1px solid var(--border);flex-direction:column;overflow:hidden;display:none}
+body.view-subject #sidebar{display:flex}
+.sidebar-top{padding:12px 16px;border-bottom:1px solid var(--border)}
+.sidebar-top .home-link{display:inline-block;font-size:12px;color:var(--text-2);text-decoration:none;margin-bottom:6px;transition:color .15s}
+.sidebar-top .home-link:hover{color:var(--accent)}
+.sidebar-top h2{font-size:15px;color:var(--text-0);font-weight:700}
+#search-box{padding:8px 16px}
+#search-box input{width:100%;padding:8px 10px;background:var(--bg-0);border:1px solid var(--border);border-radius:6px;color:var(--text-1);font-size:13px;outline:none}
+#search-box input:focus{border-color:var(--accent)}
+#compiler-btn{display:block;margin:4px 16px 8px;padding:8px;background:var(--green-bg);border:1px solid #2ea043;border-radius:6px;color:#fff;font-size:13px;font-weight:600;text-align:center;text-decoration:none;transition:background .15s}
+#compiler-btn:hover{background:#2ea043}
+#file-tree{flex:1;overflow-y:auto;padding-bottom:16px}
+.phase{margin-bottom:4px}
+.phase-title{padding:8px 16px;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;user-select:none;transition:background .1s}
+.phase-title:hover{background:var(--bg-2)}
+.phase-items{display:none}
+.phase.open .phase-items{display:block}
+.phase-title::before{content:'\25B6';margin-right:8px;font-size:10px;display:inline-block;transition:transform .2s}
+.phase.open .phase-title::before{transform:rotate(90deg)}
+.file-link{display:block;padding:6px 16px 6px 36px;font-size:13px;color:var(--text-1);text-decoration:none;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .1s}
+.file-link:hover{background:var(--bg-2)}
+.file-link.active{background:rgba(31,111,235,.2);color:var(--accent)}
+.file-link.solve{color:var(--orange)}
+.resume-dot{display:inline-block;width:6px;height:6px;background:var(--orange);border-radius:50%;margin-right:6px}
+
+/* Sidebar overlay (mobile) */
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999}
+#sidebar-overlay.open{display:block}
+
+/* ===== MAIN ===== */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ===== TOPBAR ===== */
+#topbar{height:var(--topbar-h);min-height:var(--topbar-h);background:var(--bg-1);border-bottom:1px solid var(--border);align-items:center;padding:0 16px;gap:12px;font-size:13px;display:none}
+body.view-subject #topbar{display:flex}
+#menu-btn{display:none;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-1);font-size:18px;padding:4px 8px;cursor:pointer;align-items:center;justify-content:center;line-height:1;flex-shrink:0}
+#menu-btn:hover{background:var(--bg-2)}
+#breadcrumb{flex:1;display:flex;align-items:center;gap:6px;overflow:hidden;white-space:nowrap;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+#breadcrumb a{color:var(--text-2);text-decoration:none;flex-shrink:0}
+#breadcrumb a:hover{color:var(--accent)}
+.bc-sep{color:var(--text-2);flex-shrink:0}
+.bc-current{color:var(--text-1);overflow:hidden;text-overflow:ellipsis}
+#progress-text{color:var(--green);font-size:11px;flex-shrink:0;font-family:monospace}
+
+/* ===== HOME VIEW ===== */
+#home-view{flex:1;align-items:center;justify-content:center;padding:32px;overflow-y:auto;display:none}
+body.view-home #home-view{display:flex}
+.home-content{text-align:center;max-width:720px;width:100%}
+.home-content h1{font-size:32px;color:var(--text-0);margin-bottom:8px}
+.home-content .subtitle{color:var(--text-2);font-size:16px;margin-bottom:40px}
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;text-align:left}
+.subject-card{background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:24px;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s;text-decoration:none;display:block;color:inherit}
+.subject-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.subject-card h3{font-size:20px;color:var(--text-0);margin-bottom:6px}
+.subject-card .card-desc{color:var(--text-2);font-size:14px;margin-bottom:16px;line-height:1.5}
+.subject-card .card-meta{font-size:12px;color:var(--text-2);display:flex;gap:16px}
+.subject-card .card-meta span{color:var(--accent);font-weight:600}
+.card-tag{display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600;margin-bottom:12px;letter-spacing:.5px}
+.card-tag.java{background:rgba(255,123,114,.15);color:#ff7b72}
+.card-tag.js{background:rgba(227,179,65,.15);color:#e3b341}
+
+/* ===== READER VIEW ===== */
+#reader-view{flex:1;display:none;overflow:hidden}
+body.view-subject #reader-view{display:flex}
+#content-area{display:flex;flex:1;overflow:hidden}
+#content{flex:1;overflow-y:auto;padding:32px 40px}
+#welcome{text-align:center;margin-top:15vh;color:var(--text-2)}
+#welcome h1{font-size:28px;color:var(--text-1);margin-bottom:8px}
+#welcome p{margin:4px 0;font-size:14px}
+
+/* ===== TOC ===== */
+#toc{width:var(--toc-w);min-width:var(--toc-w);background:var(--bg-0);border-left:1px solid var(--border);overflow-y:auto;padding:16px 0;display:none}
+#toc.visible{display:block}
+#toc h3{padding:0 12px 10px;font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:1px}
+#toc a{display:block;padding:4px 12px;font-size:12px;color:var(--text-2);text-decoration:none;cursor:pointer;line-height:1.5;border-left:2px solid transparent;transition:all .15s}
+#toc a:hover{color:var(--text-1);background:var(--bg-1)}
+#toc a.active{color:var(--accent);border-left-color:var(--accent);background:rgba(31,111,235,.07)}
+#toc a.toc-h1{padding-left:12px;font-weight:700;color:var(--text-0)}
+#toc a.toc-h2{padding-left:12px;font-weight:600;color:var(--text-1)}
+#toc a.toc-h3{padding-left:24px}
+#toc a.toc-h4{padding-left:36px;font-size:11px}
+
+/* ===== MARKDOWN ===== */
+.md{line-height:1.6;word-wrap:break-word}
+.md h1{font-size:28px;color:var(--text-0);border-bottom:1px solid var(--border);padding-bottom:8px;margin:24px 0 16px}
+.md h2{font-size:22px;color:var(--text-0);border-bottom:1px solid var(--border-lt);padding-bottom:6px;margin:24px 0 12px}
+.md h3{font-size:18px;color:var(--text-0);margin:20px 0 8px}
+.md h4{font-size:16px;color:var(--text-1);margin:16px 0 8px}
+.md h5{font-size:14px;color:var(--text-1);margin:12px 0 6px}
+.md p{line-height:1.7;margin:8px 0}
+.md ul,.md ol{padding-left:24px;margin:8px 0}
+.md li{line-height:1.7;margin:4px 0}
+.md li>ul,.md li>ol{margin:2px 0}
+.md strong{color:var(--text-0)}
+.md code{background:var(--bg-2);padding:2px 6px;border-radius:4px;font-size:.9em;font-family:'SF Mono','Fira Code',Consolas,monospace}
+.md pre{background:var(--bg-1);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;margin:12px 0}
+.md pre code{background:none;padding:0;font-size:13px;line-height:1.5;border-radius:0}
+.md blockquote{border-left:3px solid var(--accent);padding:8px 16px;margin:12px 0;color:var(--text-2);background:var(--bg-1);border-radius:0 4px 4px 0}
+.md blockquote p{margin:4px 0}
+.table-wrap{overflow-x:auto;margin:12px 0;-webkit-overflow-scrolling:touch}
+.md table{border-collapse:collapse;width:100%;min-width:400px}
+.md th{background:var(--bg-1);text-align:left;padding:10px 12px;border:1px solid var(--border);font-size:13px;color:var(--text-0)}
+.md td{padding:8px 12px;border:1px solid var(--border);font-size:13px}
+.md tr:nth-child(even){background:rgba(22,27,34,.5)}
+.md hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.md a{color:var(--accent);text-decoration:none}
+.md a:hover{text-decoration:underline}
+.md img{max-width:100%;border-radius:8px;margin:8px 0}
+.md details{background:var(--bg-1);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin:8px 0}
+.md summary{cursor:pointer;color:var(--accent);font-weight:600}
+.md details[open] summary{margin-bottom:8px}
+.md input[type="checkbox"]{margin-right:6px}
+.hljs{background:transparent!important;padding:0!important}
+
+/* ===== FLOATING BUTTON ===== */
+#try-it-float{position:fixed;bottom:24px;right:24px;padding:12px 20px;background:var(--green-bg);border:1px solid #2ea043;border-radius:8px;color:#fff;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);transition:background .15s,transform .15s;z-index:100;display:none}
+body.view-subject #try-it-float{display:block}
+#try-it-float:hover{background:#2ea043;transform:translateY(-2px)}
+
+/* ===== RESPONSIVE ===== */
+@media(min-width:1101px){
+  body.toc-visible #try-it-float{right:calc(var(--toc-w) + 24px)}
+}
+@media(max-width:1100px){
+  #toc{display:none!important}
+}
+@media(max-width:768px){
+  body.view-subject #sidebar{position:fixed;top:0;left:0;bottom:0;z-index:1000;transform:translateX(-100%);transition:transform .3s ease;max-width:85vw}
+  #sidebar.open{transform:translateX(0)!important}
+  body.view-subject #menu-btn{display:flex}
+  #content{padding:20px 16px}
+  .md h1{font-size:22px}
+  .md h2{font-size:18px}
+  .md h3{font-size:16px}
+  .md pre{padding:12px}
+  .md pre code{font-size:12px}
+  #try-it-float{bottom:16px;right:16px;padding:10px 16px;font-size:13px}
+  .home-content h1{font-size:26px}
+  .home-content .subtitle{font-size:14px;margin-bottom:28px}
+  .subject-grid{grid-template-columns:1fr;gap:16px}
+  #home-view{padding:24px 16px}
+}
+@media(max-width:480px){
+  #content{padding:16px 12px}
+  .md pre{padding:10px}
+  .md pre code{font-size:11px}
+  .md table{min-width:300px}
+  .home-content h1{font-size:22px}
+  .subject-card{padding:16px}
+  #breadcrumb{font-size:11px}
+}
+</style>
+</head>
+<body class="view-home">
+
+<div id="app">
+  <div id="sidebar-overlay"></div>
+
+  <aside id="sidebar">
+    <div class="sidebar-top">
+      <a href="#/" class="home-link">&larr; Home</a>
+      <h2 id="sidebar-title"></h2>
+    </div>
+    <div id="search-box"><input type="text" placeholder="Search files..." id="search-input"></div>
+    <a id="compiler-btn" href="" target="_blank" rel="noopener"></a>
+    <div id="file-tree"></div>
+  </aside>
+
+  <main id="main">
+    <div id="topbar">
+      <button id="menu-btn" aria-label="Toggle sidebar">&#9776;</button>
+      <div id="breadcrumb"></div>
+      <span id="progress-text"></span>
+    </div>
+
+    <div id="home-view">
+      <div class="home-content">
+        <h1>Study Notes</h1>
+        <p class="subtitle">Choose a subject to start studying</p>
+        <div class="subject-grid" id="subject-grid"></div>
+      </div>
+    </div>
+
+    <div id="reader-view">
+      <div id="content-area">
+        <div id="content">
+          <div id="welcome">
+            <h1>Study Notes</h1>
+            <p>Pick a file from the sidebar to start reading.</p>
+          </div>
+        </div>
+        <div id="toc">
+          <h3>On this page</h3>
+          <div id="toc-links"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<a id="try-it-float" href="" target="_blank" rel="noopener"></a>
+
+<script>
+// ===========================================
+// SUBJECT DATA
+// ===========================================
+const SUBJECTS = {
+  lld: {
+    name: 'Low-Level Design',
+    short: 'LLD',
+    description: 'OOP, SOLID Principles, Design Patterns, UML Diagrams',
+    basePath: 'LLD/',
+    compilerUrl: 'https://onecompiler.com/java',
+    compilerLabel: 'Open Java Compiler',
+    floatLabel: 'Try in Java Compiler',
+    tag: 'JAVA',
+    tagClass: 'java',
+    tree: [
+      { phase: "Phase 1: OOP Fundamentals", files: [
+        "OOP/OOP_NOTES.md", "OOP/OOP_Viva_Questions.md", "OOP/OOP_MCQ_Quiz.md", "OOP/OOP_Coding_Exam.md",
+        { path: "Practice_Problems/01_OOP/Problem1_LibrarySystem/PROBLEM.md", solve: true },
+        { path: "Practice_Problems/01_OOP/Problem2_VehicleFleet/PROBLEM.md", solve: true },
+      ]},
+      { phase: "Phase 2: Immutable Classes", files: [
+        "OOP/Immutable_Classes.md", "Teacher_PDF_Practice/Creational/Immutable_Classes_Practice.md",
+        { path: "Practice_Problems/02_Immutability/Problem1_MovieTicket/PROBLEM.md", solve: true },
+      ]},
+      { phase: "Phase 3: SOLID Principles", files: [
+        "SOLID/SOLID_NOTES.md", "SOLID/SOLID_Viva_Questions.md", "SOLID/SOLID_MCQ_Quiz.md", "SOLID/SOLID_Coding_Exam.md",
+        { path: "Practice_Problems/03_SOLID/Problem1_NotificationRefactor/PROBLEM.md", solve: true },
+        { path: "Practice_Problems/03_SOLID/Problem2_FileExporter/PROBLEM.md", solve: true },
+      ]},
+      { phase: "Phase 4: Design Patterns Overview", files: [ "Design_Patterns/Design_Patterns_Overview.md" ]},
+      { phase: "Phase 5: Creational Patterns", files: [
+        "Design_Patterns/Singleton.md", "Teacher_PDF_Practice/Creational/Singleton_Practice.md",
+        { path: "Practice_Problems/04_Creational/Problem1_Singleton_AppConfig/PROBLEM.md", solve: true },
+        "Design_Patterns/Factory.md", "Teacher_PDF_Practice/Creational/Factory_Practice.md",
+        "Design_Patterns/Builder.md", "Teacher_PDF_Practice/Creational/Builder_Practice.md",
+        { path: "Practice_Problems/04_Creational/Problem2_Factory_DocumentCreator/PROBLEM.md", solve: true },
+        { path: "Practice_Problems/04_Creational/Problem3_Builder_HttpRequest/PROBLEM.md", solve: true },
+        "Design_Patterns/Prototype.md", "Teacher_PDF_Practice/Creational/Prototype_Practice.md",
+        { path: "Practice_Problems/04_Creational/Problem4_Prototype_UITheme/PROBLEM.md", solve: true },
+      ]},
+      { phase: "Phase 6: Structural Patterns", files: [
+        "Design_Patterns/Flyweight.md", "Design_Patterns/Proxy.md",
+        "Design_Patterns/Adapter.md", "Teacher_PDF_Practice/Structural/Adapter_Practice.md",
+        { path: "Practice_Problems/05_Structural/Problem1_Adapter_WeatherService/PROBLEM.md", solve: true },
+        "Design_Patterns/Decorator.md", "Teacher_PDF_Practice/Structural/Decorator_Practice.md",
+        { path: "Practice_Problems/05_Structural/Problem2_Decorator_Logger/PROBLEM.md", solve: true },
+      ]},
+      { phase: "Phase 7: Behavioral Patterns", files: [
+        "Design_Patterns/Strategy.md", "Teacher_PDF_Practice/Behavioral/Strategy_Practice.md",
+        { path: "Practice_Problems/06_Behavioral/Problem1_Strategy_Compression/PROBLEM.md", solve: true },
+        "Design_Patterns/Observer.md",
+      ]},
+      { phase: "Phase 8: UML Diagrams", files: [ "OOP/UML_Diagrams.md" ]},
+      { phase: "Phase 9: Final Revision", files: [
+        "OOP/OOP_MCQ_Quiz.md", "SOLID/SOLID_MCQ_Quiz.md",
+        "Teacher_PDF_Practice/Creational/Singleton_Practice.md", "Teacher_PDF_Practice/Creational/Factory_Practice.md",
+        "Teacher_PDF_Practice/Creational/Builder_Practice.md", "Teacher_PDF_Practice/Creational/Prototype_Practice.md",
+        "Teacher_PDF_Practice/Structural/Adapter_Practice.md", "Teacher_PDF_Practice/Structural/Decorator_Practice.md",
+        "Teacher_PDF_Practice/Behavioral/Strategy_Practice.md",
+        "Design_Patterns/Flyweight.md", "Design_Patterns/Proxy.md", "Design_Patterns/Observer.md",
+        "Design_Patterns/Design_Patterns_Overview.md",
+      ]},
+      { phase: "Study Order", files: [ "STUDY_ORDER.md" ]},
+    ]
+  },
+  js: {
+    name: 'JavaScript',
+    short: 'JS',
+    description: 'Core Concepts, Async Patterns, Closures, Prototypes, Exam Prep',
+    basePath: 'JS/',
+    compilerUrl: 'https://onecompiler.com/javascript',
+    compilerLabel: 'Open JS Console',
+    floatLabel: 'Try in JS Console',
+    tag: 'JAVASCRIPT',
+    tagClass: 'js',
+    tree: [
+      { phase: "Core Notes", files: [ "notes.md" ]},
+      { phase: "Practice", files: [ "practiceSheet.md", "Contest_Practice-1.md" ]},
+      { phase: "Exam Prep", files: [
+        "Exam/01-this-keyword.md",
+        "Exam/02-constructors-prototypes.md",
+        "Exam/03-classes-oop.md",
+        "Exam/04-call-apply-bind.md",
+        "Exam/05-hof-array-polyfills.md",
+        "Exam/06-closures-scope-currying.md",
+        "Exam/07-promises.md",
+        "Exam/08-event-loop.md",
+        "Exam/09-async-patterns.md",
+        "Exam/10-debounce-throttle.md",
+        "Exam/11-memory-management.md",
+        "Exam/12-clone-equality-immutability.md",
+        "Exam/13-memoization-caching-lru.md",
+        "Exam/14-js-weird-parts.md",
+      ]},
+    ]
+  }
+};
+
+// ===========================================
+// STATE
+// ===========================================
+let currentSubject = null;
+let currentFilePath = null;
+let allLinks = [];
+let tocEntries = [];
+let saveTimer = null;
+
+// ===========================================
+// DOM REFS
+// ===========================================
+const $ = id => document.getElementById(id);
+const contentEl = $('content');
+const tocEl = $('toc');
+const tocLinksEl = $('toc-links');
+const sidebarEl = $('sidebar');
+const overlayEl = $('sidebar-overlay');
+const searchInput = $('search-input');
+const fileTreeEl = $('file-tree');
+const breadcrumbEl = $('breadcrumb');
+const progressEl = $('progress-text');
+const compilerBtnEl = $('compiler-btn');
+const tryItFloatEl = $('try-it-float');
+
+// ===========================================
+// LOCALSTORAGE
+// ===========================================
+function getPositions(subject) {
+  try {
+    const all = JSON.parse(localStorage.getItem('study_positions') || '{}');
+    return all[subject] || {};
+  } catch { return {}; }
+}
+function savePosition(subject, path, scrollTop) {
+  try {
+    const all = JSON.parse(localStorage.getItem('study_positions') || '{}');
+    if (!all[subject]) all[subject] = {};
+    all[subject][path] = scrollTop;
+    localStorage.setItem('study_positions', JSON.stringify(all));
+  } catch {}
+}
+function getPosition(subject, path) {
+  return getPositions(subject)[path] || 0;
+}
+function getVisitedFiles(subject) {
+  return new Set(Object.keys(getPositions(subject)));
+}
+
+// Migrate old lld_positions from previous version
+(function migrate() {
+  try {
+    const old = localStorage.getItem('lld_positions');
+    if (old && !localStorage.getItem('study_positions_migrated')) {
+      const parsed = JSON.parse(old);
+      const all = JSON.parse(localStorage.getItem('study_positions') || '{}');
+      all.lld = { ...parsed, ...(all.lld || {}) };
+      localStorage.setItem('study_positions', JSON.stringify(all));
+      localStorage.setItem('study_positions_migrated', '1');
+    }
+  } catch {}
+})();
+
+// ===========================================
+// HOME VIEW
+// ===========================================
+function buildHomeCards() {
+  const grid = $('subject-grid');
+  grid.innerHTML = '';
+  for (const [key, subj] of Object.entries(SUBJECTS)) {
+    const fileCount = subj.tree.reduce((n, g) => n + g.files.length, 0);
+    const phaseCount = subj.tree.length;
+    const card = document.createElement('a');
+    card.className = 'subject-card';
+    card.href = '#/' + key;
+    card.innerHTML =
+      '<div class="card-tag ' + subj.tagClass + '">' + subj.tag + '</div>' +
+      '<h3>' + subj.name + '</h3>' +
+      '<p class="card-desc">' + subj.description + '</p>' +
+      '<div class="card-meta"><span>' + fileCount + ' files</span> &middot; ' + phaseCount + ' sections</div>';
+    grid.appendChild(card);
+  }
+}
+buildHomeCards();
+
+// ===========================================
+// SIDEBAR
+// ===========================================
+function buildSidebar(subjectKey) {
+  const subj = SUBJECTS[subjectKey];
+  $('sidebar-title').textContent = subj.short + ' Notes';
+  compilerBtnEl.href = subj.compilerUrl;
+  compilerBtnEl.textContent = subj.compilerLabel;
+  tryItFloatEl.href = subj.compilerUrl;
+  tryItFloatEl.textContent = subj.floatLabel;
+
+  fileTreeEl.innerHTML = '';
+  allLinks = [];
+  const visited = getVisitedFiles(subjectKey);
+
+  subj.tree.forEach(function(group, gi) {
+    var div = document.createElement('div');
+    div.className = 'phase' + (gi === 0 ? ' open' : '');
+
+    var title = document.createElement('div');
+    title.className = 'phase-title';
+    title.textContent = group.phase;
+    title.onclick = function() { div.classList.toggle('open'); };
+    div.appendChild(title);
+
+    var items = document.createElement('div');
+    items.className = 'phase-items';
+
+    group.files.forEach(function(f) {
+      var path = typeof f === 'string' ? f : f.path;
+      var isSolve = typeof f === 'object' && f.solve;
+      var a = document.createElement('a');
+      a.className = 'file-link' + (isSolve ? ' solve' : '');
+      a.href = '#/' + subjectKey + '/' + path;
+
+      var dot = visited.has(path) ? '<span class="resume-dot" title="Resume reading"></span>' : '';
+      a.innerHTML = dot + (isSolve ? '[SOLVE] ' : '') + path.split('/').pop().replace('.md', '');
+      a.dataset.path = path;
+
+      a.addEventListener('click', function() { closeSidebar(); });
+
+      items.appendChild(a);
+      allLinks.push({ el: a, path: path, name: path.toLowerCase() });
+    });
+
+    div.appendChild(items);
+    fileTreeEl.appendChild(div);
+  });
+
+  searchInput.value = '';
+}
+
+// Search
+searchInput.addEventListener('input', function() {
+  var q = this.value.toLowerCase();
+  allLinks.forEach(function(l) { l.el.style.display = l.name.includes(q) ? '' : 'none'; });
+  if (q) document.querySelectorAll('.phase').forEach(function(p) { p.classList.add('open'); });
+});
+
+// ===========================================
+// SIDEBAR MOBILE
+// ===========================================
+function openSidebar() {
+  sidebarEl.classList.add('open');
+  overlayEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  sidebarEl.classList.remove('open');
+  overlayEl.classList.remove('open');
+  document.body.style.overflow = '';
+}
+$('menu-btn').addEventListener('click', function() {
+  sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+});
+overlayEl.addEventListener('click', closeSidebar);
+
+// ===========================================
+// BREADCRUMB
+// ===========================================
+function updateBreadcrumb() {
+  var html = '<a href="#/">Home</a>';
+  if (currentSubject) {
+    var subj = SUBJECTS[currentSubject];
+    html += '<span class="bc-sep"> / </span>';
+    html += '<a href="#/' + currentSubject + '">' + subj.short + '</a>';
+  }
+  if (currentFilePath) {
+    var name = currentFilePath.split('/').pop();
+    html += '<span class="bc-sep"> / </span>';
+    html += '<span class="bc-current" title="' + currentFilePath + '">' + name + '</span>';
+  }
+  breadcrumbEl.innerHTML = html;
+}
+
+// ===========================================
+// TITLE
+// ===========================================
+function updateTitle() {
+  var parts = ['Study Notes'];
+  if (currentSubject) parts.unshift(SUBJECTS[currentSubject].short);
+  if (currentFilePath) parts.unshift(currentFilePath.split('/').pop().replace('.md', ''));
+  document.title = parts.join(' - ');
+}
+
+// ===========================================
+// PROGRESS
+// ===========================================
+function updateProgress() {
+  if (!currentFilePath) { progressEl.textContent = ''; return; }
+  var sh = contentEl.scrollHeight - contentEl.clientHeight;
+  if (sh <= 0) { progressEl.textContent = '100%'; return; }
+  var pct = Math.min(100, Math.round((contentEl.scrollTop / sh) * 100));
+  progressEl.textContent = pct + '%';
+}
+
+// ===========================================
+// TOC
+// ===========================================
+function buildToc() {
+  tocLinksEl.innerHTML = '';
+  tocEntries = [];
+  var headings = contentEl.querySelectorAll('h1, h2, h3, h4');
+  if (headings.length < 2) {
+    tocEl.classList.remove('visible');
+    document.body.classList.remove('toc-visible');
+    return;
+  }
+
+  tocEl.classList.add('visible');
+  document.body.classList.add('toc-visible');
+
+  headings.forEach(function(h, i) {
+    if (!h.id) h.id = 'heading-' + i;
+    var level = h.tagName.toLowerCase();
+    var a = document.createElement('a');
+    a.className = 'toc-' + level;
+    a.textContent = h.textContent;
+    a.onclick = function(e) {
+      e.preventDefault();
+      contentEl.scrollTo({ top: h.offsetTop - 20, behavior: 'smooth' });
+    };
+    tocLinksEl.appendChild(a);
+    tocEntries.push({ link: a, target: h });
+  });
+}
+
+function updateTocHighlight() {
+  if (!tocEntries.length) return;
+  var scrollTop = contentEl.scrollTop + 60;
+  var active = tocEntries[0];
+  for (var i = 0; i < tocEntries.length; i++) {
+    if (tocEntries[i].target.offsetTop <= scrollTop) active = tocEntries[i];
+  }
+  tocEntries.forEach(function(e) { e.link.classList.remove('active'); });
+  if (active) active.link.classList.add('active');
+}
+
+// ===========================================
+// SCROLL EVENTS
+// ===========================================
+contentEl.addEventListener('scroll', function() {
+  if (!currentFilePath || !currentSubject) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function() {
+    savePosition(currentSubject, currentFilePath, contentEl.scrollTop);
+    updateProgress();
+  }, 300);
+  updateTocHighlight();
+});
+
+// ===========================================
+// MARKED CONFIG
+// ===========================================
+if (typeof marked !== 'undefined') {
+  marked.use({ gfm: true, breaks: false });
+}
+
+function renderMarkdown(text) {
+  if (typeof marked !== 'undefined' && marked.parse) {
+    return marked.parse(text);
+  }
+  // Minimal fallback if CDN fails
+  return '<pre style="white-space:pre-wrap">' + text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+}
+
+// ===========================================
+// FILE LOADING
+// ===========================================
+async function loadFile(subjectKey, filePath) {
+  if (currentFilePath && currentSubject) {
+    savePosition(currentSubject, currentFilePath, contentEl.scrollTop);
+  }
+
+  currentFilePath = filePath;
+  updateBreadcrumb();
+  updateTitle();
+
+  // Highlight active link in sidebar
+  document.querySelectorAll('.file-link').forEach(function(a) { a.classList.remove('active'); });
+  var activeLink = allLinks.find(function(l) { return l.path === filePath; });
+  if (activeLink) {
+    activeLink.el.classList.add('active');
+    var phase = activeLink.el.closest('.phase');
+    if (phase) phase.classList.add('open');
+  }
+
+  var subj = SUBJECTS[subjectKey];
+  var fetchPath = subj.basePath + filePath;
+
+  try {
+    var resp = await fetch(fetchPath);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var md = await resp.text();
+
+    var html = renderMarkdown(md);
+
+    // Wrap tables for responsive horizontal scrolling
+    html = html.replace(/<table(?=[\s>])/g, '<div class="table-wrap"><table');
+    html = html.replace(/<\/table>/g, '</table></div>');
+
+    contentEl.innerHTML = '<div class="md">' + html + '</div>';
+
+    // Syntax highlight all code blocks
+    if (typeof hljs !== 'undefined') {
+      contentEl.querySelectorAll('pre code').forEach(function(el) {
+        hljs.highlightElement(el);
+      });
+    }
+
+    buildToc();
+
+    // Restore saved scroll position
+    var saved = getPosition(subjectKey, filePath);
+    contentEl.scrollTop = saved > 0 ? saved : 0;
+
+    // Add resume dot if not present
+    if (activeLink && !activeLink.el.querySelector('.resume-dot')) {
+      var dot = document.createElement('span');
+      dot.className = 'resume-dot';
+      dot.title = 'Resume reading';
+      activeLink.el.prepend(dot);
+    }
+
+    updateProgress();
+    setTimeout(updateTocHighlight, 50);
+  } catch (e) {
+    contentEl.innerHTML = '<div class="md"><h2>Could not load file</h2><p>' + fetchPath + '</p><p style="color:var(--red);">' + e.message + '</p></div>';
+    tocEl.classList.remove('visible');
+    document.body.classList.remove('toc-visible');
+    progressEl.textContent = '';
+  }
+}
+
+function showWelcome(subjectKey) {
+  currentFilePath = null;
+  var subj = SUBJECTS[subjectKey];
+  contentEl.innerHTML = '<div id="welcome"><h1>' + subj.name + ' Study Notes</h1><p>Pick a file from the sidebar to start reading.</p></div>';
+  tocEl.classList.remove('visible');
+  document.body.classList.remove('toc-visible');
+  progressEl.textContent = '';
+  document.querySelectorAll('.file-link').forEach(function(a) { a.classList.remove('active'); });
+  updateBreadcrumb();
+  updateTitle();
+}
+
+// ===========================================
+// CONTENT LINK INTERCEPTION
+// ===========================================
+contentEl.addEventListener('click', function(e) {
+  var link = e.target.closest('a');
+  if (!link) return;
+  var href = link.getAttribute('href');
+  if (!href) return;
+
+  // External links open normally
+  if (href.startsWith('http://') || href.startsWith('https://')) return;
+
+  // Anchor links within page
+  if (href.startsWith('#') && !href.startsWith('#/')) {
+    e.preventDefault();
+    var id = href.slice(1);
+    var target = document.getElementById(id);
+    if (target) contentEl.scrollTo({ top: target.offsetTop - 20, behavior: 'smooth' });
+    return;
+  }
+
+  // Internal .md file links
+  if (href.endsWith('.md') || href.includes('.md#')) {
+    e.preventDefault();
+    var parts = href.split('#');
+    var filePart = parts[0];
+    if (!filePart) return;
+
+    var basePath = currentFilePath ? currentFilePath.split('/').slice(0, -1).join('/') : '';
+    var resolved;
+    if (filePart.startsWith('/')) {
+      resolved = filePart.slice(1);
+    } else {
+      resolved = basePath ? basePath + '/' + filePart : filePart;
+    }
+
+    // Normalize path (resolve ../ and ./)
+    var segments = resolved.split('/');
+    var normalized = [];
+    for (var i = 0; i < segments.length; i++) {
+      if (segments[i] === '..') normalized.pop();
+      else if (segments[i] !== '.' && segments[i] !== '') normalized.push(segments[i]);
+    }
+    location.hash = '#/' + currentSubject + '/' + normalized.join('/');
+  }
+});
+
+// ===========================================
+// VIEW SWITCHING
+// ===========================================
+function showHome() {
+  if (currentFilePath && currentSubject) {
+    savePosition(currentSubject, currentFilePath, contentEl.scrollTop);
+  }
+  currentSubject = null;
+  currentFilePath = null;
+  document.body.className = 'view-home';
+  closeSidebar();
+  document.title = 'Study Notes';
+}
+
+function showSubject(subjectKey) {
+  if (currentSubject === subjectKey) return;
+
+  if (currentFilePath && currentSubject) {
+    savePosition(currentSubject, currentFilePath, contentEl.scrollTop);
+  }
+
+  currentSubject = subjectKey;
+  currentFilePath = null;
+  document.body.className = 'view-subject';
+
+  buildSidebar(subjectKey);
+  showWelcome(subjectKey);
+}
+
+// ===========================================
+// ROUTER
+// ===========================================
+function handleRoute() {
+  var hash = location.hash || '#/';
+  var raw = hash.startsWith('#/') ? hash.slice(2) : hash.slice(1);
+  var parts = raw.split('/').filter(Boolean);
+
+  if (parts.length === 0) {
+    showHome();
+    return;
+  }
+
+  var subjectKey = parts[0];
+  if (!SUBJECTS[subjectKey]) {
+    showHome();
+    return;
+  }
+
+  var filePath = parts.slice(1).join('/');
+
+  if (currentSubject !== subjectKey) {
+    showSubject(subjectKey);
+  }
+
+  if (filePath) {
+    loadFile(subjectKey, filePath);
+  } else if (currentFilePath) {
+    showWelcome(subjectKey);
+  }
+}
+
+window.addEventListener('hashchange', handleRoute);
+window.addEventListener('load', handleRoute);
+
+// Save on unload
+window.addEventListener('beforeunload', function() {
+  if (currentSubject && currentFilePath) {
+    savePosition(currentSubject, currentFilePath, contentEl.scrollTop);
+  }
+});
+
+// ===========================================
+// KEYBOARD SHORTCUTS
+// ===========================================
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    if (currentSubject) {
+      if (window.innerWidth <= 768) openSidebar();
+      searchInput.focus();
+    }
+  }
+  if (e.key === 'Escape') closeSidebar();
+});
+</script>
+</body>
+</html>
