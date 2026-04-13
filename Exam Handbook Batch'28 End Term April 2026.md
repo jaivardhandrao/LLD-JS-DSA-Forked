@@ -5,8 +5,8 @@
 | 13th April 2026 | Functional Programming using JS | A+B  | 05:30 pm to 07:00 pm |
 | 14th April 2026 | Low Level Design 101 (Exam 1\) | A+B  | 11:00 am to 12:00 pm |
 | 15th April 2026 | Product Management | A+B | 11:00 am to 12:30 pm |
-| 16th April 2026 | Low Level Design 101 (Exam 2\) | A+B | 03:30 pm to 05:30 pm |
-| 17th April 2026 | DSA IV | A+B | 05:30 pm to 07:30 pm |
+| 16th April 2026 | Low Level Design 101 (Exam 2\) | A+B | 01:30 pm to 03:30 pm |
+| 17th April 2026 | DSA IV | A+B | 06:00 pm to 08:00 pm |
 
 The seating arrangement and venue will be shared on the same day of the exam.
 
