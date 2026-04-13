@@ -6,6 +6,73 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 08 — StrategyDesignPattern.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2008/Java%20Code)
+
+**Theme:** Robots with swappable Walk/Talk/Fly behaviors.
+
+```java
+// Strategy interfaces
+interface WalkableRobot { void walk(); }
+interface TalkableRobot { void talk(); }
+interface FlyableRobot  { void fly();  }
+
+// Concrete walk strategies
+class NormalWalk implements WalkableRobot { public void walk() { System.out.println("Walking normally..."); } }
+class NoWalk     implements WalkableRobot { public void walk() { System.out.println("Cannot walk."); } }
+
+// Concrete talk strategies
+class NormalTalk implements TalkableRobot { public void talk() { System.out.println("Talking normally..."); } }
+class NoTalk     implements TalkableRobot { public void talk() { System.out.println("Cannot talk."); } }
+
+// Concrete fly strategies
+class NormalFly implements FlyableRobot { public void fly() { System.out.println("Flying normally..."); } }
+class NoFly     implements FlyableRobot { public void fly() { System.out.println("Cannot fly."); } }
+
+// Context — Robot holds strategy references
+abstract class Robot {
+    protected WalkableRobot walkBehavior;
+    protected TalkableRobot talkBehavior;
+    protected FlyableRobot  flyBehavior;
+
+    public Robot(WalkableRobot w, TalkableRobot t, FlyableRobot f) {
+        this.walkBehavior = w;
+        this.talkBehavior = t;
+        this.flyBehavior  = f;
+    }
+
+    public void walk() { walkBehavior.walk(); }
+    public void talk() { talkBehavior.talk(); }
+    public void fly()  { flyBehavior.fly();   }
+    public abstract void projection();
+}
+
+class CompanionRobot extends Robot {
+    public CompanionRobot(WalkableRobot w, TalkableRobot t, FlyableRobot f) { super(w, t, f); }
+    public void projection() { System.out.println("Displaying friendly features..."); }
+}
+
+class WorkerRobot extends Robot {
+    public WorkerRobot(WalkableRobot w, TalkableRobot t, FlyableRobot f) { super(w, t, f); }
+    public void projection() { System.out.println("Displaying worker stats..."); }
+}
+
+public class StrategyDesignPattern {
+    public static void main(String[] args) {
+        Robot r1 = new CompanionRobot(new NormalWalk(), new NormalTalk(), new NoFly());
+        r1.walk(); r1.talk(); r1.fly(); r1.projection();
+
+        Robot r2 = new WorkerRobot(new NoWalk(), new NoTalk(), new NormalFly());
+        r2.walk(); r2.talk(); r2.fly(); r2.projection();
+    }
+}
+```
+
+**Key insight:** `CompanionRobot` and `WorkerRobot` differ ONLY in which strategy objects are injected. No if/else. Adding a `SpyRobot` requires ZERO changes to existing code.
+
+---
+
 ## The Problem: Algorithm Locked in Inheritance
 
 ### Scenario

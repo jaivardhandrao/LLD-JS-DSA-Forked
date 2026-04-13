@@ -6,6 +6,93 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 30 — WithFlyWeight.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2030/Java%20Code)
+
+**Theme:** Space game spawning 1,000,000 asteroids while sharing their intrinsic properties.
+
+```java
+import java.util.*;
+
+// Flyweight — stores INTRINSIC (shared) state only
+class AsteroidFlyweight {
+    private int length, width, weight;
+    private String color, texture, material;
+
+    public AsteroidFlyweight(int l, int w, int wt, String col, String tex, String mat) {
+        this.length = l; this.width = w; this.weight = wt;
+        this.color = col; this.texture = tex; this.material = mat;
+    }
+
+    public void render(int posX, int posY, int velX, int velY) {
+        System.out.println("Rendering " + color + " " + material + " asteroid at ("
+            + posX + "," + posY + ") Size:" + length + "x" + width
+            + " Vel:(" + velX + "," + velY + ")");
+    }
+}
+
+// Flyweight Factory — returns shared instances
+class AsteroidFactory {
+    private static Map<String, AsteroidFlyweight> flyweights = new HashMap<>();
+
+    public static AsteroidFlyweight getAsteroid(
+            int length, int width, int weight, String color, String texture, String material) {
+        String key = length + "_" + width + "_" + weight + "_" + color + "_" + texture + "_" + material;
+        if (!flyweights.containsKey(key)) {
+            flyweights.put(key, new AsteroidFlyweight(length, width, weight, color, texture, material));
+        }
+        return flyweights.get(key);
+    }
+
+    public static int getFlyweightCount() { return flyweights.size(); }
+}
+
+// Context — stores EXTRINSIC (unique) state only
+class AsteroidContext {
+    private AsteroidFlyweight flyweight; // shared reference
+    private int posX, posY, velocityX, velocityY; // unique per asteroid
+
+    public AsteroidContext(AsteroidFlyweight fw, int posX, int posY, int velX, int velY) {
+        this.flyweight = fw;
+        this.posX = posX; this.posY = posY;
+        this.velocityX = velX; this.velocityY = velY;
+    }
+
+    public void render() {
+        flyweight.render(posX, posY, velocityX, velocityY);
+    }
+}
+
+public class WithFlyWeight {
+    public static void main(String[] args) {
+        List<AsteroidContext> asteroids = new ArrayList<>();
+        int COUNT = 1_000_000;
+
+        String[] colors    = {"Red", "Blue", "Gray"};
+        String[] textures  = {"Rocky", "Metallic", "Icy"};
+        String[] materials = {"Iron", "Stone", "Ice"};
+        int[]    sizes     = {25, 35, 45};
+
+        for (int i = 0; i < COUNT; i++) {
+            int type = i % 3;
+            AsteroidFlyweight fw = AsteroidFactory.getAsteroid(
+                sizes[type], sizes[type], sizes[type] * 10,
+                colors[type], textures[type], materials[type]
+            );
+            asteroids.add(new AsteroidContext(fw, 100 + i * 50, 200 + i * 30, 1, 2));
+        }
+
+        System.out.println("Total asteroids: " + COUNT);
+        System.out.println("Unique flyweight objects: " + AsteroidFactory.getFlyweightCount()); // 3 !!
+    }
+}
+```
+
+**The magic:** 1,000,000 `AsteroidContext` objects but only **3 `AsteroidFlyweight` objects** (one per asteroid type). Memory: instead of 1M × full object, you get 1M × (pointer + 4 ints) + 3 × full object.
+
+---
+
 ## The Problem: Memory Waste from Duplicated State
 
 ### Scenario 1: Text Editor

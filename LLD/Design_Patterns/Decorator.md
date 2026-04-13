@@ -6,6 +6,70 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 13 — DecoratorPattern.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2013/Java%20Code)
+
+**Theme:** Mario power-ups applied dynamically via decoration.
+
+```java
+// Component interface
+interface Character {
+    String getAbilities();
+}
+
+// Concrete component
+class Mario implements Character {
+    public String getAbilities() { return "Mario"; }
+}
+
+// Abstract decorator — IS-A Character AND HAS-A Character
+abstract class CharacterDecorator implements Character {
+    protected Character character;
+    public CharacterDecorator(Character c) { this.character = c; }
+}
+
+// Concrete decorators
+class HeightUp extends CharacterDecorator {
+    public HeightUp(Character c) { super(c); }
+    public String getAbilities() { return character.getAbilities() + " with HeightUp"; }
+}
+
+class GunPowerUp extends CharacterDecorator {
+    public GunPowerUp(Character c) { super(c); }
+    public String getAbilities() { return character.getAbilities() + " with Gun"; }
+}
+
+class StarPowerUp extends CharacterDecorator {
+    public StarPowerUp(Character c) { super(c); }
+    public String getAbilities() { return character.getAbilities() + " with Star Power (Limited Time)"; }
+}
+
+public class DecoratorPattern {
+    public static void main(String[] args) {
+        Character mario = new Mario();
+        System.out.println("Basic: " + mario.getAbilities());
+        // Mario
+
+        mario = new HeightUp(mario);
+        System.out.println("After HeightUp: " + mario.getAbilities());
+        // Mario with HeightUp
+
+        mario = new GunPowerUp(mario);
+        System.out.println("After GunPowerUp: " + mario.getAbilities());
+        // Mario with HeightUp with Gun
+
+        mario = new StarPowerUp(mario);
+        System.out.println("After StarPowerUp: " + mario.getAbilities());
+        // Mario with HeightUp with Gun with Star Power (Limited Time)
+    }
+}
+```
+
+**Key insight:** Each decorator wraps the previous one, forming a chain. Order matters. You can stack any combination without subclassing.
+
+---
+
 ## The Problem: Combinatorial Behavior Explosion
 
 ### Scenario

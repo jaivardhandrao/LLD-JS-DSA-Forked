@@ -1,11 +1,137 @@
-# Factory Design Pattern (Simple Factory + Factory Method)
+# Factory Design Pattern (Simple Factory + Factory Method + Abstract Factory)
 
 **Category:** Creational
 **Intent:** Centralize and abstract object creation so clients don't need to know concrete class names.
 
-This note covers TWO related concepts:
+This note covers THREE related concepts:
 1. **Simple Factory** -- a utility that centralizes `new` logic (technically a technique, not a GoF pattern)
 2. **Factory Method** -- a GoF pattern where a superclass algorithm defers creation to subclasses
+3. **Abstract Factory** -- creates families of related objects; switching the factory switches the whole family
+
+---
+
+## Coder Army Reference Example
+
+From [Lecture 09 — SimpleFactory, FactoryMethod, AbstractFactory](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2009/Java%20Code)
+
+### Simple Factory (Burger Example)
+```java
+interface Burger {
+    void prepare();
+}
+
+class BasicBurger implements Burger {
+    public void prepare() { System.out.println("Preparing Basic Burger!"); }
+}
+class StandardBurger implements Burger {
+    public void prepare() { System.out.println("Preparing Standard Burger!"); }
+}
+class PremiumBurger implements Burger {
+    public void prepare() { System.out.println("Preparing Premium Burger!"); }
+}
+
+class BurgerFactory {
+    public Burger createBurger(String type) {
+        if (type.equalsIgnoreCase("basic"))    return new BasicBurger();
+        if (type.equalsIgnoreCase("standard")) return new StandardBurger();
+        if (type.equalsIgnoreCase("premium"))  return new PremiumBurger();
+        return null;
+    }
+}
+```
+
+### Factory Method (Two Burger Chains)
+```java
+interface BurgerFactory {
+    Burger createBurger(String type);
+}
+
+// Concrete Factory A — regular buns
+class SinghBurger implements BurgerFactory {
+    public Burger createBurger(String type) {
+        if (type.equalsIgnoreCase("basic"))    return new BasicBurger();
+        if (type.equalsIgnoreCase("standard")) return new StandardBurger();
+        if (type.equalsIgnoreCase("premium"))  return new PremiumBurger();
+        return null;
+    }
+}
+
+// Concrete Factory B — wheat buns
+class KingBurger implements BurgerFactory {
+    public Burger createBurger(String type) {
+        if (type.equalsIgnoreCase("basic"))    return new BasicWheatBurger();
+        if (type.equalsIgnoreCase("standard")) return new StandardWheatBurger();
+        if (type.equalsIgnoreCase("premium"))  return new PremiumWheatBurger();
+        return null;
+    }
+}
+
+// Client — depends only on the interface
+public class FactoryMethod {
+    public static void main(String[] args) {
+        BurgerFactory factory = new SinghBurger(); // swap to KingBurger with 0 code change
+        Burger burger = factory.createBurger("basic");
+        burger.prepare();
+    }
+}
+```
+
+**Key insight:** The client picks which `BurgerFactory` to use. Swapping `SinghBurger` for `KingBurger` changes the entire product family without touching any other code.
+
+### Abstract Factory (Burger + GarlicBread Family)
+```java
+// Abstract Factory interface — creates a FAMILY of related products
+interface MealFactory {
+    Burger     createBurger(String type);
+    GarlicBread createGarlicBread(String type);
+}
+
+// Concrete Factory A — regular (non-wheat) family
+class SinghBurger implements MealFactory {
+    public Burger createBurger(String type) {
+        if (type.equalsIgnoreCase("basic"))    return new BasicBurger();
+        if (type.equalsIgnoreCase("standard")) return new StandardBurger();
+        if (type.equalsIgnoreCase("premium"))  return new PremiumBurger();
+        return null;
+    }
+    public GarlicBread createGarlicBread(String type) {
+        if (type.equalsIgnoreCase("basic"))  return new BasicGarlicBread();
+        if (type.equalsIgnoreCase("cheese")) return new CheeseGarlicBread();
+        return null;
+    }
+}
+
+// Concrete Factory B — wheat family
+class KingBurger implements MealFactory {
+    public Burger createBurger(String type) {
+        if (type.equalsIgnoreCase("basic"))    return new BasicWheatBurger();
+        if (type.equalsIgnoreCase("standard")) return new StandardWheatBurger();
+        if (type.equalsIgnoreCase("premium"))  return new PremiumWheatBurger();
+        return null;
+    }
+    public GarlicBread createGarlicBread(String type) {
+        if (type.equalsIgnoreCase("basic"))  return new BasicWheatGarlicBread();
+        if (type.equalsIgnoreCase("cheese")) return new CheeseWheatGarlicBread();
+        return null;
+    }
+}
+
+// Client — uses MealFactory interface only; never sees concrete classes
+public class AbstractFactory {
+    public static void main(String[] args) {
+        MealFactory factory = new SinghBurger(); // swap to KingBurger → whole family switches
+        Burger      burger      = factory.createBurger("basic");
+        GarlicBread garlicBread = factory.createGarlicBread("cheese");
+        burger.prepare();      // Preparing Basic Burger...
+        garlicBread.prepare(); // Preparing Cheese Garlic Bread...
+    }
+}
+```
+
+**Abstract Factory vs Factory Method:**
+- Factory Method: one `createProduct()` — creates ONE product type
+- Abstract Factory: multiple `createProductA()`, `createProductB()` — creates a CONSISTENT FAMILY
+- Switching the factory switches the ENTIRE family consistently (no mixing wheat bread with regular burger)
 
 ---
 

@@ -6,6 +6,70 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 16 — AdapterPattern.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2016/Java%20Code)
+
+**Theme:** Client expects JSON data, but the service only provides XML.
+
+```java
+// Target interface — what the client expects
+interface IReports {
+    String getJsonData(String data);
+}
+
+// Adaptee — existing class with incompatible interface
+class XmlDataProvider {
+    String getXmlData(String data) {
+        int sep = data.indexOf(':');
+        String name = data.substring(0, sep);
+        String id   = data.substring(sep + 1);
+        return "<user><name>" + name + "</name><id>" + id + "</id></user>";
+    }
+}
+
+// Adapter — wraps XmlDataProvider, implements IReports
+class XmlDataProviderAdapter implements IReports {
+    private XmlDataProvider xmlProvider;
+
+    public XmlDataProviderAdapter(XmlDataProvider provider) {
+        this.xmlProvider = provider;
+    }
+
+    public String getJsonData(String data) {
+        String xml = xmlProvider.getXmlData(data);
+        // Parse XML and convert to JSON
+        int startName = xml.indexOf("<name>") + 6;
+        int endName   = xml.indexOf("</name>");
+        String name   = xml.substring(startName, endName);
+        int startId   = xml.indexOf("<id>") + 4;
+        int endId     = xml.indexOf("</id>");
+        String id     = xml.substring(startId, endId);
+        return "{\"name\":\"" + name + "\", \"id\":" + id + "}";
+    }
+}
+
+// Client — uses only IReports
+class Client {
+    public void getReport(IReports report, String rawData) {
+        System.out.println("Processed JSON: " + report.getJsonData(rawData));
+    }
+}
+
+public class AdapterPattern {
+    public static void main(String[] args) {
+        XmlDataProvider xmlProv = new XmlDataProvider();
+        IReports adapter = new XmlDataProviderAdapter(xmlProv);
+        new Client().getReport(adapter, "Alice:42");
+        // Output: Processed JSON: {"name":"Alice", "id":42}
+    }
+}
+```
+
+**Roles:** `IReports` = Target, `XmlDataProvider` = Adaptee, `XmlDataProviderAdapter` = Adapter, `Client` = Client.
+
+---
+
 ## The Problem
 
 You have a **client** (e.g., `SellerRankingService`) that expects a specific interface. But the actual services you need to use have **different, incompatible** interfaces.

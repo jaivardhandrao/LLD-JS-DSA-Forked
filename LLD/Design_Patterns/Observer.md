@@ -6,6 +6,91 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 12 — ObserverDesignPattern.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2012/Java%20Code)
+
+**Theme:** YouTube channel subscription system.
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+interface ISubscriber {
+    void update();
+}
+
+interface IChannel {
+    void subscribe(ISubscriber subscriber);
+    void unsubscribe(ISubscriber subscriber);
+    void notifySubscribers();
+}
+
+class Channel implements IChannel {
+    private List<ISubscriber> subscribers = new ArrayList<>();
+    private String name;
+    private String latestVideo;
+
+    public Channel(String name) { this.name = name; }
+
+    public void subscribe(ISubscriber subscriber) {
+        if (!subscribers.contains(subscriber)) subscribers.add(subscriber);
+    }
+
+    public void unsubscribe(ISubscriber subscriber) {
+        subscribers.remove(subscriber);
+    }
+
+    public void notifySubscribers() {
+        for (ISubscriber sub : subscribers) sub.update();
+    }
+
+    public void uploadVideo(String title) {
+        latestVideo = title;
+        System.out.println("\n[" + name + " uploaded \"" + title + "\"]");
+        notifySubscribers();
+    }
+
+    public String getVideoData() {
+        return "\nCheckout our new Video: " + latestVideo;
+    }
+}
+
+class Subscriber implements ISubscriber {
+    private String name;
+    private Channel channel;
+
+    public Subscriber(String name, Channel channel) {
+        this.name = name; this.channel = channel;
+    }
+
+    public void update() {
+        System.out.println("Hey " + name + "," + channel.getVideoData());
+    }
+}
+
+public class ObserverDesignPattern {
+    public static void main(String[] args) {
+        Channel channel = new Channel("CoderArmy");
+        Subscriber s1 = new Subscriber("Varun", channel);
+        Subscriber s2 = new Subscriber("Tarun", channel);
+
+        channel.subscribe(s1);
+        channel.subscribe(s2);
+        channel.uploadVideo("Observer Pattern Tutorial");
+        // Both Varun and Tarun notified
+
+        channel.unsubscribe(s1);
+        channel.uploadVideo("Decorator Pattern Tutorial");
+        // Only Tarun notified now
+    }
+}
+```
+
+**Roles:** `Channel` = Observable/Subject, `Subscriber` = Observer. `IChannel` and `ISubscriber` are the interfaces that decouple them.
+
+---
+
 ## The Problem: Tight Coupling and Polling
 
 ### Scenario

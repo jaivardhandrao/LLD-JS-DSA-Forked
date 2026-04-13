@@ -6,6 +6,90 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 21 — ProtectionProxy.java & VirtualProxy.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2021/Java%20Code)
+
+### Protection Proxy (Access Control)
+```java
+interface IDocumentReader {
+    void unlockPDF(String filePath, String password);
+}
+
+class RealDocumentReader implements IDocumentReader {
+    public void unlockPDF(String filePath, String password) {
+        System.out.println("[RealReader] Unlocking PDF: " + filePath);
+        System.out.println("[RealReader] Displaying PDF content...");
+    }
+}
+
+class User {
+    public String name;
+    public boolean premiumMembership;
+    public User(String name, boolean isPremium) { this.name = name; this.premiumMembership = isPremium; }
+}
+
+class DocumentProxy implements IDocumentReader {
+    private RealDocumentReader realReader = new RealDocumentReader();
+    private User user;
+
+    public DocumentProxy(User user) { this.user = user; }
+
+    public void unlockPDF(String filePath, String password) {
+        if (!user.premiumMembership) {
+            System.out.println("[Proxy] Access denied. Premium members only.");
+            return;
+        }
+        realReader.unlockPDF(filePath, password);
+    }
+}
+
+public class ProtectionProxy {
+    public static void main(String[] args) {
+        new DocumentProxy(new User("Rohan", false)).unlockPDF("doc.pdf", "secret");
+        // [Proxy] Access denied.
+
+        new DocumentProxy(new User("Rashmi", true)).unlockPDF("doc.pdf", "secret");
+        // [RealReader] Displaying PDF content...
+    }
+}
+```
+
+### Virtual Proxy (Lazy Initialization)
+```java
+interface IImage { void display(); }
+
+class RealImage implements IImage {
+    private String filename;
+    public RealImage(String file) {
+        this.filename = file;
+        System.out.println("[RealImage] Loading from disk: " + filename); // expensive!
+    }
+    public void display() { System.out.println("[RealImage] Displaying " + filename); }
+}
+
+class ImageProxy implements IImage {
+    private RealImage realImage = null; // not loaded yet
+    private String filename;
+
+    public ImageProxy(String file) { this.filename = file; }
+
+    public void display() {
+        if (realImage == null) realImage = new RealImage(filename); // lazy load on first use
+        realImage.display();
+    }
+}
+
+// Client sees no difference — both implement IImage
+IImage img = new ImageProxy("sample.jpg");
+img.display(); // loads now (first call)
+img.display(); // no reload (already loaded)
+```
+
+**The pattern:** Proxy and RealSubject implement the **same interface**. Client code never changes. The proxy intercepts calls and adds control logic (access check, lazy loading, logging, caching) transparently.
+
+---
+
 ## The Problem: Uncontrolled Access to Expensive or Sensitive Objects
 
 ### Scenario

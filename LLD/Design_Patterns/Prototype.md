@@ -6,6 +6,78 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 36 — PrototypePattern.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2036/Java%20Code)
+
+**Theme:** Cloning NPC (Non-Player Character) game objects to avoid expensive re-initialization.
+
+```java
+// Custom Cloneable interface (note: NOT java.lang.Cloneable)
+interface Cloneable {
+    Cloneable clone();
+}
+
+class NPC implements Cloneable {
+    public String name;
+    public int health;
+    public int attack;
+    public int defense;
+
+    // Original constructor — "expensive" (simulates DB call, complex calc)
+    public NPC(String name, int health, int attack, int defense) {
+        // imagine: call database, complex calculation here
+        this.name = name;
+        this.health = health;
+        this.attack = attack;
+        this.defense = defense;
+        System.out.println("Setting up template NPC '" + name + "'");
+    }
+
+    // Copy constructor — used by clone()
+    public NPC(NPC other) {
+        this.name = other.name;
+        this.health = other.health;
+        this.attack = other.attack;
+        this.defense = other.defense;
+        System.out.println("Cloning NPC '" + name + "'");
+    }
+
+    // Required by Prototype pattern
+    public Cloneable clone() { return new NPC(this); }
+
+    public void describe() {
+        System.out.println("NPC " + name + " [HP=" + health + " ATK=" + attack + " DEF=" + defense + "]");
+    }
+
+    // Setters to customize the clone
+    public void setName(String n)   { name = n; }
+    public void setHealth(int h)    { health = h; }
+    public void setAttack(int a)    { attack = a; }
+    public void setDefense(int d)   { defense = d; }
+}
+
+public class PrototypePattern {
+    public static void main(String[] args) {
+        // 1. Build ONE expensive template
+        NPC alien = new NPC("Alien", 30, 5, 2);
+
+        // 2. Clone it cheaply as many times as needed
+        NPC clone1 = (NPC) alien.clone();
+        clone1.describe(); // NPC Alien [HP=30 ATK=5 DEF=2]
+
+        NPC clone2 = (NPC) alien.clone();
+        clone2.setName("Powerful Alien");
+        clone2.setHealth(50);
+        clone2.describe(); // NPC Powerful Alien [HP=50 ATK=5 DEF=2]
+    }
+}
+```
+
+**Key insight:** `NPC("Alien", 30, 5, 2)` prints "Setting up template NPC" (expensive). All clones print "Cloning NPC" (cheap). The DB call only happens ONCE regardless of how many NPCs you spawn.
+
+---
+
 ## Why Prototype?
 
 ### The Problem

@@ -1,170 +1,138 @@
-# Design Patterns Overview -- Creational, Structural, Behavioral
+# Design Patterns Overview
 
-Design patterns are **reusable solutions to common design problems**. They are NOT library code you copy-paste -- they are templates for how to structure classes and objects to solve a specific kind of problem.
+**What are design patterns?** Reusable solutions to commonly occurring software design problems. They are templates — not code — that describe how to solve a problem in a given context.
 
-The GoF (Gang of Four) book groups patterns into **3 categories** based on what kind of problem they solve.
-
----
-
-## The Three Categories
-
-### Creational Patterns -- "How do I create objects?"
-
-**Problem they solve:** Object creation can be complex, expensive, or tightly coupled. Creational patterns decouple the **client** from the **concrete classes** it instantiates.
-
-**Core idea:** Instead of `new ConcreteClass()` scattered everywhere, put creation behind an abstraction.
-
-| Pattern | What it does | When to use |
-|---------|-------------|-------------|
-| **Singleton** | Ensure exactly one instance exists | Loggers, config managers, connection pools |
-| **Factory Method** | Superclass defines algorithm, subclasses decide which object to create | Creation policy varies per subclass (stone spawner: random vs equalized) |
-| **Simple Factory** | Static method centralizes `new` logic (not a GoF pattern, but a technique) | You just want to hide concrete classes in one place |
-| **Builder** | Construct complex objects step-by-step via fluent API | Many parameters (some optional), immutable objects |
-| **Prototype** | Clone a pre-configured exemplar instead of constructing from scratch | Expensive construction, runtime-extensible set of products |
-
-**Exam Tip:** Simple Factory is NOT a GoF pattern. It's a pragmatic technique. Factory Method IS a GoF pattern. Know the difference.
+**Origin:** GoF (Gang of Four) — "Design Patterns: Elements of Reusable Object-Oriented Software" (1994). 23 patterns organized into 3 categories.
 
 ---
 
-### Structural Patterns -- "How do I compose objects?"
+## The 11 Patterns You Need to Study
 
-**Problem they solve:** You have existing classes/interfaces that don't fit together, or you need to add behavior without changing existing code. Structural patterns deal with **how objects are connected and composed**.
+### Creational (How objects are created)
 
-**Core idea:** Use composition and wrapping to build larger structures from smaller parts.
+| Pattern | One-Line Intent | Coder Army Lecture |
+|---------|----------------|-------------------|
+| **Singleton** | Exactly one instance, global access point | Lecture 10 |
+| **Factory Method** | Subclass decides which object to create | Lecture 09 |
+| **Abstract Factory** | Create families of related objects | Lecture 09 |
+| **Builder** | Construct complex objects step-by-step | Lecture 28 |
+| **Prototype** | Clone existing objects instead of constructing | Lecture 36 |
 
-| Pattern | What it does | When to use |
-|---------|-------------|-------------|
-| **Adapter** | Translates one interface into another the client expects | Integrating legacy/third-party services with incompatible APIs |
-| **Decorator** | Wraps an object to add optional, stackable behavior dynamically | Cross-cutting concerns (logging, retry, caching, auth) that are optional and combinable |
-| **Flyweight** | Share common state across many objects to save memory | Thousands of similar objects (text characters, game trees, map icons) |
-| **Proxy** | Control access to an object (lazy load, security, caching) | Heavy objects that shouldn't load until needed, role-based access control |
+### Structural (How objects are composed)
 
-**Other structural patterns (not in syllabus but good to know exist):** Facade (simplify a complex subsystem), Composite (tree structures), Bridge (separate abstraction from implementation).
+| Pattern | One-Line Intent | Coder Army Lecture |
+|---------|----------------|-------------------|
+| **Adapter** | Bridge incompatible interfaces | Lecture 16 |
+| **Decorator** | Add behavior by wrapping, not subclassing | Lecture 13 |
+| **Flyweight** | Share common state to reduce memory | Lecture 30 |
+| **Proxy** | Control access via a surrogate | Lecture 21 |
 
----
+### Behavioral (How objects communicate)
 
-### Behavioral Patterns -- "How do objects interact?"
-
-**Problem they solve:** You have an algorithm or behavior that needs to vary, or objects need to communicate in a flexible way. Behavioral patterns deal with **algorithms and responsibility assignment**.
-
-**Core idea:** Encapsulate varying behavior behind an interface so it can be swapped, composed, or delegated.
-
-| Pattern | What it does | When to use |
-|---------|-------------|-------------|
-| **Strategy** | Encapsulate a family of algorithms; client picks one at runtime | Sorting policies, fee computation, AI movement, validation rules |
-| **Observer** | One-to-many notification; when subject changes, all observers are notified | Stock tickers, event systems, news feeds, UI data binding |
-
-**Other behavioral patterns (not in syllabus but good to know exist):** Template Method (algorithm skeleton with overridable steps), State (behavior changes as internal state changes), Command (encapsulate a request as an object).
+| Pattern | One-Line Intent | Coder Army Lecture |
+|---------|----------------|-------------------|
+| **Observer** | Notify dependents when state changes | Lecture 12 |
+| **Strategy** | Swap algorithms at runtime | Lecture 08 |
 
 ---
 
-## Master Comparison Table
+## Pattern vs Principle vs Technique
 
-| Aspect | Singleton | Factory Method | Builder | Prototype | Adapter | Decorator | Flyweight | Proxy | Strategy | Observer |
-|--------|-----------|---------------|---------|-----------|---------|-----------|-----------|-------|----------|----------|
-| **Category** | Creational | Creational | Creational | Creational | Structural | Structural | Structural | Structural | Behavioral | Behavioral |
-| **Core mechanism** | Private constructor + static access | Abstract method overridden by subclasses | Fluent API + `build()` | `clone()` / `copy()` | Composition (wraps adaptee) | Composition (wraps component) | Factory + cache for shared state | Same interface, controls access | Composition (delegates to strategy) | Subject notifies list of observers |
-| **Number of instances** | Exactly 1 | Many (1 per factory call) | 1 (the built object) | Many (clones) | 1 adapter per provider | N decorators stacked | Few shared, many contexts | 1 proxy per subject | 1 strategy at a time | 1 subject, N observers |
-| **Key SOLID principle** | -- | OCP, DIP | SRP | OCP | All 5 | OCP, SRP | SRP | SRP, OCP | OCP, SRP, DIP | OCP, DIP |
-| **Solves** | Global access + single instance | Varying creation policy | Complex construction | Expensive/dynamic creation | Incompatible interfaces | Optional stackable behaviors | Memory waste from duplicate state | Lazy loading, access control, caching | Interchangeable algorithms | Event notification, loose coupling |
+| Term | What it is | Example |
+|------|-----------|---------|
+| **OOP Pillar** | Fundamental concept | Encapsulation, Polymorphism |
+| **Design Principle** | Rule to follow | SOLID principles |
+| **Design Pattern** | Reusable solution template | Singleton, Strategy |
+| **Technique** | Useful idiom (not GoF) | Simple Factory |
+
+**Exam Trap:** Simple Factory is NOT a GoF pattern. It's a technique.
 
 ---
 
-## When to Use Which -- Decision Flowchart
+## The 3 Questions to Identify Any Pattern
 
-**"I need to create an object..."**
+1. **What problem does it solve?** (Memory, coupling, creation, access control...)
+2. **What are its roles?** (Subject/Observer, Creator/Product, Context/Strategy...)
+3. **What OOP mechanism does it use?** (Composition, inheritance, delegation...)
 
-- Only one instance ever? -> **Singleton**
-- Many parameters, some optional? -> **Builder**
-- Object is expensive to construct, or types are defined at runtime? -> **Prototype**
-- Creation policy varies per subclass (fixed algorithm, varying product)? -> **Factory Method**
-- Just want to hide `new` behind a clean method? -> **Simple Factory**
+---
 
-**"I have objects that don't fit together..."**
+## Quick Recall Table
 
-- Legacy/third-party API doesn't match what my code expects? -> **Adapter**
-- I need to add optional, stackable behavior to an existing interface? -> **Decorator**
-- Thousands of similar objects eating memory? -> **Flyweight** (share intrinsic state)
-- I need lazy loading, access control, or caching around an object? -> **Proxy**
-
-**"I need different behavior at runtime..."**
-
-- One algorithm selected from a family, swappable at runtime? -> **Strategy**
-- Multiple optional behaviors layered on top of each other? -> **Decorator** (not Strategy!)
-- When one object changes, many others need to know? -> **Observer**
+| Pattern | Category | Mechanism | Key Benefit |
+|---------|----------|-----------|-------------|
+| Singleton | Creational | Static instance | One instance, thread safety |
+| Factory Method | Creational | Inheritance + override | Subclass controls creation |
+| Abstract Factory | Creational | Composition | Product family consistency |
+| Builder | Creational | Method chaining | Readable complex construction |
+| Prototype | Creational | clone() | Avoid expensive re-construction |
+| Adapter | Structural | Composition (wrapping) | Bridge incompatible interfaces |
+| Decorator | Structural | Composition + same interface | Stackable behavior at runtime |
+| Flyweight | Structural | Shared objects | Massive memory reduction |
+| Proxy | Structural | Same interface + delegation | Access control / lazy loading |
+| Observer | Behavioral | Event notification | Loose coupling for updates |
+| Strategy | Behavioral | Composition (has-a) | Swappable algorithms |
 
 ---
 
 ## Common Exam Confusions
 
-### Decorator vs Strategy
+**Adapter vs Decorator:**
+- Both wrap another object
+- Adapter: **converts interface** (different input/output types)
+- Decorator: **same interface**, adds behavior
 
-| | Decorator | Strategy |
-|-|-----------|----------|
-| **How many at once** | Multiple stacked | One at a time |
-| **Adds behavior** | Before/after the wrapped call | Replaces the entire algorithm |
-| **Client knows about layering?** | No -- sees one interface | No -- sees one interface |
-| **Example** | Retry + Cache + Auth on HTTP client | CountSort vs QuickSort vs InsertionSort |
+**Proxy vs Decorator:**
+- Both wrap another object with same interface
+- Proxy: **controls access** (auth, lazy load, caching)
+- Decorator: **adds behavior** (logging, retries, transforms)
 
-**Quick test:** "Can I stack them?" If yes -> Decorator. "Do I pick one?" If yes -> Strategy.
+**Strategy vs State:**
+- Strategy: **client** picks the algorithm
+- State: **object** changes behavior based on its own state
 
-### Adapter vs Decorator
+**Factory Method vs Simple Factory:**
+- Simple Factory: static method + switch (NOT GoF)
+- Factory Method: base class has algorithm, subclass overrides factory method (GoF, follows OCP)
 
-| | Adapter | Decorator |
-|-|---------|-----------|
-| **Changes interface?** | Yes (translates one interface to another) | No (same interface in and out) |
-| **Adds behavior?** | No (only translates) | Yes (adds new behavior) |
-| **Goal** | Make incompatible things work together | Extend existing behavior dynamically |
+**Builder vs Constructor:**
+- Constructor: all params in one shot (telescoping)
+- Builder: step-by-step, only set what you need, readable
 
-### Factory Method vs Simple Factory
-
-| | Simple Factory | Factory Method |
-|-|---------------|---------------|
-| **Structure** | Static method with switch/if | Abstract method overridden by subclasses |
-| **GoF pattern?** | No (technique) | Yes |
-| **When creation policy varies per instance?** | Can't do it | This is exactly what it's for |
-| **Example** | `StoneFactory.create(SMALL)` | `RandomStoneSpawner.createStone()` vs `EqualizedStoneSpawner.createStone()` |
-
-### Prototype vs Factory
-
-| | Prototype | Factory Method |
-|-|-----------|---------------|
-| **Creates by** | Cloning an exemplar | Calling `new` in a subclass method |
-| **Set of products known at** | Runtime (registry) | Compile time (subclass hierarchy) |
-| **Best when** | Construction is expensive | Creation policy varies per subclass |
+**Prototype vs Copy Constructor:**
+- Both copy objects
+- Prototype: client doesn't know the concrete type (uses interface)
+- Copy constructor: client knows the concrete type
 
 ---
 
-## How Patterns Combine
+## SOLID Connection Summary
 
-Patterns don't live in isolation. In real systems:
-
-- **Factory + Prototype:** A factory can internally clone prototypes from a registry instead of calling `new`.
-- **Strategy + Factory:** A factory can create the right strategy based on config/context.
-- **Decorator + Strategy:** A decorator might use a strategy internally (e.g., a caching decorator with a configurable eviction strategy).
-- **Builder + Singleton:** A builder can return a singleton (e.g., `Configuration.builder()...build()` always returns the same config).
-- **Adapter + Decorator:** An adapter translates the interface, then decorators add cross-cutting behavior on top.
-
----
-
-## Pattern Category Quick Recall
-
-**Creational** (create objects cleanly): **S**ingleton, **F**actory, **B**uilder, **P**rototype
-- Mnemonic: **S**ome **F**actories **B**uild **P**roducts
-
-**Structural** (compose objects): **A**dapter, **D**ecorator, **F**lyweight, **P**roxy
-- Mnemonic: **A** **D**ecorated **F**lying **P**roxy
-
-**Behavioral** (object interaction): **S**trategy, **O**bserver
-- Mnemonic: **S**trategy **O**bserves
+| Pattern | SRP | OCP | LSP | DIP |
+|---------|-----|-----|-----|-----|
+| Singleton | partial | - | - | violates (global) |
+| Factory Method | ✓ | ✓ | ✓ | ✓ |
+| Abstract Factory | ✓ | ✓ | ✓ | ✓ |
+| Builder | ✓ | ✓ | - | - |
+| Prototype | - | ✓ | ✓ | ✓ |
+| Adapter | - | ✓ | ✓ | ✓ |
+| Decorator | ✓ | ✓ | ✓ | ✓ |
+| Flyweight | - | ✓ | - | - |
+| Proxy | - | ✓ | ✓ | ✓ |
+| Observer | ✓ | ✓ | ✓ | ✓ |
+| Strategy | ✓ | ✓ | ✓ | ✓ |
 
 ---
 
-## Exam Tips
+## Study Order
 
-- "Which category does X belong to?" -- memorize the table. This is a free MCQ point.
-- "What's the difference between Adapter and Decorator?" -- interface change vs behavior addition.
-- "What's the difference between Strategy and Decorator?" -- one-at-a-time vs stackable.
-- "Is Simple Factory a design pattern?" -- No, it's a technique. Factory Method is the GoF pattern.
-- "Can patterns be combined?" -- Yes, and knowing combinations shows depth.
-- Every pattern in this course uses **composition over inheritance** except Singleton (which doesn't involve composition at all) and Factory Method (which uses inheritance for the creator hierarchy).
+1. Singleton (thread safety, DCL, volatile)
+2. Factory Method (+ Simple Factory, Abstract Factory)
+3. Builder (method chaining, immutability)
+4. Prototype (clone, registry)
+5. Strategy (composition, hot-swap)
+6. Observer (event notification)
+7. Decorator (wrapping, stacking)
+8. Adapter (interface conversion)
+9. Proxy (access control, lazy load)
+10. Flyweight (intrinsic/extrinsic, factory)

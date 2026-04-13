@@ -6,6 +6,60 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 10 — SimpleSingleton & ThreadSafeDoubleLockingSingleton](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2010/Java%20Code)
+
+### Basic Singleton (Not thread-safe)
+```java
+public class SimpleSingleton {
+    private static SimpleSingleton instance = null;
+
+    private SimpleSingleton() {
+        System.out.println("Singleton Constructor called");
+    }
+
+    public static SimpleSingleton getInstance() {
+        if (instance == null) {
+            instance = new SimpleSingleton();
+        }
+        return instance;
+    }
+
+    public static void main(String[] args) {
+        SimpleSingleton s1 = SimpleSingleton.getInstance();
+        SimpleSingleton s2 = SimpleSingleton.getInstance();
+        System.out.println(s1 == s2); // true
+    }
+}
+```
+
+### Thread-Safe Double-Checked Locking (Production)
+```java
+public class ThreadSafeDoubleLockingSingleton {
+    private static ThreadSafeDoubleLockingSingleton instance = null;
+
+    private ThreadSafeDoubleLockingSingleton() {
+        System.out.println("Singleton Constructor Called!");
+    }
+
+    public static ThreadSafeDoubleLockingSingleton getInstance() {
+        if (instance == null) {
+            synchronized (ThreadSafeDoubleLockingSingleton.class) {
+                if (instance == null) {
+                    instance = new ThreadSafeDoubleLockingSingleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+**Note:** The Coder Army example does NOT have `volatile` on `instance`. This is intentional for teaching progression — for production code, `volatile` is required. See Step 6 below.
+
+---
+
 ## Why Singleton?
 
 **Problem:** Some classes should have exactly ONE instance in the entire application. If multiple instances exist, they could cause inconsistent state (e.g., two loggers writing to different files, two config managers with different settings).

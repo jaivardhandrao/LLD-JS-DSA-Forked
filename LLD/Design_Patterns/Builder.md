@@ -6,6 +6,84 @@
 
 ---
 
+## Coder Army Reference Example
+
+From [Lecture 28 — simpleBuilder/HttpRequest.java](https://github.com/adityatandon15/Low-Level-Design-Course/tree/main/Lecture%2028/Java%20Code)
+
+**Theme:** Building an HTTP request with optional parameters using fluent builder.
+
+```java
+import java.util.*;
+
+public class HttpRequest {
+    private String url;
+    private String method;
+    private Map<String, String> headers;
+    private Map<String, String> queryParams;
+    private String body;
+    private int timeout;
+
+    private HttpRequest() {
+        headers = new HashMap<>();
+        queryParams = new HashMap<>();
+        body = "";
+    }
+
+    public void execute() {
+        System.out.println("Executing " + method + " request to " + url);
+        if (!queryParams.isEmpty()) queryParams.forEach((k,v) -> System.out.println("  " + k + "=" + v));
+        headers.forEach((k,v) -> System.out.println("  " + k + ": " + v));
+        if (body != null && !body.isEmpty()) System.out.println("Body: " + body);
+        System.out.println("Timeout: " + timeout + "s");
+    }
+
+    // Nested Builder class
+    public static class HttpRequestBuilder {
+        private HttpRequest req;
+
+        public HttpRequestBuilder() { req = new HttpRequest(); }
+
+        public HttpRequestBuilder withUrl(String u)            { req.url = u; return this; }
+        public HttpRequestBuilder withMethod(String method)    { req.method = method; return this; }
+        public HttpRequestBuilder withHeader(String k, String v) { req.headers.put(k, v); return this; }
+        public HttpRequestBuilder withQueryParams(String k, String v) { req.queryParams.put(k, v); return this; }
+        public HttpRequestBuilder withBody(String body)        { req.body = body; return this; }
+        public HttpRequestBuilder withTimeout(int timeout)     { req.timeout = timeout; return this; }
+
+        public HttpRequest build() {
+            if (req.url == null || req.url.isEmpty())
+                throw new RuntimeException("URL cannot be empty");
+            return req;
+        }
+    }
+}
+
+// Usage — fluent method chaining
+class Main {
+    public static void main(String[] args) {
+        HttpRequest request = new HttpRequest.HttpRequestBuilder()
+            .withUrl("https://api.example.com/users")
+            .withMethod("POST")
+            .withHeader("Authorization", "Bearer token123")
+            .withHeader("Content-Type", "application/json")
+            .withQueryParams("page", "1")
+            .withBody("{\"name\":\"Alice\"}")
+            .withTimeout(30)
+            .build();
+
+        request.execute();
+    }
+}
+```
+
+**Key structural points:**
+- `HttpRequest` constructor is `private` — can only be created via builder
+- Builder is a **nested static class** — can access private fields
+- Each `withXxx()` returns `this` (the builder) for **method chaining**
+- `build()` validates and returns the final immutable object
+
+---
+
 ## The Problem: Telescoping Constructors
 
 When a class has many fields (8-10+), constructors become unreadable.
