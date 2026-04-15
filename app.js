@@ -77,6 +77,17 @@ const SUBJECTS = {
         "Design_Patterns/Design_Patterns_Overview.md",
       ]},
       { phase: "Study Order", files: [ "STUDY_ORDER.md" ]},
+      { phase: "Assignments", files: [
+        "Assignments/01_Singleton_FileConfig.md",
+        "Assignments/02_Singleton_Pool.md",
+        "Assignments/03_Builder_Message.md",
+        "Assignments/04_Builder_Config.md",
+        "Assignments/05_Factory_Audio.md",
+        "Assignments/06_Prototype_User.md",
+        "Assignments/07_Prototype_Config.md",
+        "Assignments/08_Flyweight_Graphic.md",
+        "Assignments/09_Decorator_API.md",
+      ]},
     ]
   },
   js: {
