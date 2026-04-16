@@ -173,6 +173,8 @@ const SUBJECTS = {
       ]},
       { phase: "Phase 7: Number Theory", files: [
         "Revision/Topics/07_Number_Theory.md",
+        { path: "Revision/Assignments/05_A_B_and_Modulo.md", solve: true },
+        { path: "Revision/Assignments/06_Pubg.md", solve: true },
       ]},
       { phase: "Phase 8: String Matching", files: [
         "Revision/Topics/08_String_Matching.md",
@@ -183,6 +185,8 @@ const SUBJECTS = {
         { path: "Revision/Assignments/02_Unique_BSTs_II.md", solve: true },
         { path: "Revision/Assignments/03_Range_Minimum_Query.md", solve: true },
         { path: "Revision/Assignments/04_Bob_and_Queries.md", solve: true },
+        { path: "Revision/Assignments/05_A_B_and_Modulo.md", solve: true },
+        { path: "Revision/Assignments/06_Pubg.md", solve: true },
       ]},
     ]
   },

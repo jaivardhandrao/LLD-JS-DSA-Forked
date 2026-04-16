@@ -10,6 +10,8 @@ Collected problems solved in class / assignments, with question, solution, and e
 | 2 | [Unique Binary Search Trees II](02_Unique_BSTs_II.md) | Dynamic Programming | Catalan / pick-a-root |
 | 3 | [Range Minimum Query](03_Range_Minimum_Query.md) | Segment Trees | Point Update + Range Min (struct-node template) |
 | 4 | [Bob and Queries](04_Bob_and_Queries.md) | Segment Trees | Multi-field node · popcount · fetch-then-update |
+| 5 | [A, B and Modulo](05_A_B_and_Modulo.md) | Number Theory | `A ≡ B (mod M)` ⇔ `M \| (A − B)` — O(1) |
+| 6 | [Pubg](06_Pubg.md) | Number Theory | Repeated subtraction → GCD of array |
 
 ## How to Use This Section
 
