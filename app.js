@@ -165,6 +165,7 @@ const SUBJECTS = {
       ]},
       { phase: "Phase 5: Segment Trees", files: [
         "Revision/Topics/05_Segment_Trees.md",
+        { path: "Revision/Assignments/03_Range_Minimum_Query.md", solve: true },
       ]},
       { phase: "Phase 6: TreeSet & TreeMap", files: [
         "Revision/Topics/06_TreeSet_TreeMap.md",
@@ -179,6 +180,7 @@ const SUBJECTS = {
         "Revision/Assignments/INDEX.md",
         { path: "Revision/Assignments/01_Matrix_Chain_Multiplication.md", solve: true },
         { path: "Revision/Assignments/02_Unique_BSTs_II.md", solve: true },
+        { path: "Revision/Assignments/03_Range_Minimum_Query.md", solve: true },
       ]},
     ]
   },

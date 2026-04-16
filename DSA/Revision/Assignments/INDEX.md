@@ -8,6 +8,7 @@ Collected problems solved in class / assignments, with question, solution, and e
 | :---: | :--- | :--- | :--- |
 | 1 | [Matrix Chain Multiplication](01_Matrix_Chain_Multiplication.md) | Dynamic Programming | Interval / Partition DP |
 | 2 | [Unique Binary Search Trees II](02_Unique_BSTs_II.md) | Dynamic Programming | Catalan / pick-a-root |
+| 3 | [Range Minimum Query](03_Range_Minimum_Query.md) | Segment Trees | Point Update + Range Min (struct-node template) |
 
 ## How to Use This Section
 
