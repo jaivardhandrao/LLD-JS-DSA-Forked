@@ -89,6 +89,7 @@ body.view-home #home-view{display:flex}
 .card-tag.java{background:rgba(255,123,114,.15);color:#ff7b72}
 .card-tag.js{background:rgba(227,179,65,.15);color:#e3b341}
 .card-tag.handbook{background:rgba(125,211,252,.15);color:#7dd3fc}
+.card-tag.dsa{background:rgba(163,230,53,.15);color:#a3e635}
 
 /* ===== READER VIEW ===== */
 #reader-view{flex:1;display:none;overflow:hidden}

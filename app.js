@@ -133,6 +133,55 @@ const SUBJECTS = {
       ]},
     ]
   },
+  dsa: {
+    name: 'Data Structures & Algorithms',
+    short: 'DSA',
+    description: "DSA IV · End Term 17 April 2026 — DP · Graphs · Shortest Paths · MST · Segment Trees · Number Theory · String Matching",
+    basePath: 'DSA/',
+    compilerUrl: 'https://onecompiler.com/cpp',
+    compilerLabel: 'Open C++ Compiler',
+    floatLabel: 'Try in C++ Compiler',
+    tag: 'C++',
+    tagClass: 'dsa',
+    tree: [
+      { phase: "⚡ Exam-Eve Cheatsheet", files: [
+        "Revision/Cheatsheet.md",
+        "Revision/STUDY_ORDER.md",
+      ]},
+      { phase: "Phase 1: Dynamic Programming", files: [
+        "Revision/Topics/01_Dynamic_Programming.md",
+        { path: "Revision/Assignments/01_Matrix_Chain_Multiplication.md", solve: true },
+        { path: "Revision/Assignments/02_Unique_BSTs_II.md", solve: true },
+      ]},
+      { phase: "Phase 2: Graphs — Traversals", files: [
+        "Revision/Topics/02_Graph_Basics.md",
+        "Graph_Study_Plan.md",
+      ]},
+      { phase: "Phase 3: Shortest Paths", files: [
+        "Revision/Topics/03_Shortest_Paths.md",
+      ]},
+      { phase: "Phase 4: Minimum Spanning Tree", files: [
+        "Revision/Topics/04_Minimum_Spanning_Tree.md",
+      ]},
+      { phase: "Phase 5: Segment Trees", files: [
+        "Revision/Topics/05_Segment_Trees.md",
+      ]},
+      { phase: "Phase 6: TreeSet & TreeMap", files: [
+        "Revision/Topics/06_TreeSet_TreeMap.md",
+      ]},
+      { phase: "Phase 7: Number Theory", files: [
+        "Revision/Topics/07_Number_Theory.md",
+      ]},
+      { phase: "Phase 8: String Matching", files: [
+        "Revision/Topics/08_String_Matching.md",
+      ]},
+      { phase: "🎯 Assignment Revision", files: [
+        "Revision/Assignments/INDEX.md",
+        { path: "Revision/Assignments/01_Matrix_Chain_Multiplication.md", solve: true },
+        { path: "Revision/Assignments/02_Unique_BSTs_II.md", solve: true },
+      ]},
+    ]
+  },
   handbook: {
     name: 'Exam Handbook',
     short: 'Handbook',
